@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block headline %}
+    {{ "Plan a new route." }}
+{% endblock %}
+
+{% block subhead %}
+    {{ "Just choose where you want to start." }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        {% if start is not none %}
+            <p>Using coordinates: {{ start }}</p>
+        {% else %}
+            <p>No coords found. Location defaulted to UoB!</p>
+        {% endif %}
+
+
+        <div id='map' style='width: 500px; height: 300px;'></div>
+        <script>
+            mapboxgl.accessToken = '{{ mapbox_key }}';
+            const map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v9',
+                center: [{{ start[0] }}, {{ start[1] }}],
+                zoom: 10
+            });
+            map.on('load', function() {
+                const geojsonData = {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [{{ start[0] }}, {{ start[1] }}]
+                        }
+                    }]
+                };
+                map.addLayer({
+                    "id": "points",
+                    "type": "circle",
+                    "source": {
+                        "type": "geojson",
+                        "data": geojsonData
+                    }
+                })
+            })
+        </script>
+
+
+        <p></p>
+    </div>
+
+{% endblock %}

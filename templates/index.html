@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block headline %}
+    {{ "Get excited about cycling again." }}
+{% endblock %}
+
+{% block subhead %}
+    {{ "Find new routes, explore new places." }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <p>
+            <a href="/create">New route</a>
+            <br>
+            <a href="/create/london">Starting from London?</a>
+        </p>
+    </div>
+
+{% endblock %}
