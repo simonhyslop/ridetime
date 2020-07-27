@@ -1,8 +1,10 @@
 import openrouteservice
 from openrouteservice import geocode
 from openrouteservice.directions import directions
+from config import Config
 
-ors_key = open('ors_key').readline()  # Read OpenRouteService key from file
+
+ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
 ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
 
 
