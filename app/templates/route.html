@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+    {{ "Here's your route!" }}
+{% endblock %}
+
+{% block subhead %}
+    {{ "Just navigating one-way for now..." }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div id='map' style='width: 800px; height: 500px;'></div>
+
+        <p><strong>Route summary:</strong> {{ distance }} km // Approx. {{ duration }} mins.</p>
+
+        <p>Something go wrong? <a href='/'>Start search again.</a></p>
+
+    </div>
+
+    {# https://docs.mapbox.com/mapbox-gl-js/example/geojson-line/ #}
+    <script>
+        mapboxgl.accessToken = '{{ mapbox_key }}';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            center: [{{ start[0] }}, {{ start[1] }}], // Center map using start coords
+            zoom: 10
+        });
+
+        const marker = new mapboxgl.Marker()
+            .setLngLat([{{ start[0] }}, {{ start[1] }}])
+            .addTo(map);
+
+        map.on('load', function() {
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates':
+                        {{ route }}
+                    }
+                }
+            });
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#E84B29',
+                    'line-width': 8
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block subhead %}
-    {{ "Find new routes, explore new places." }}
+    {{ "Discover new road cycling routes with RideTime." }}
 {% endblock %}
 
 
@@ -14,6 +14,7 @@
     <div class="container">
         <h1>Where are you starting from?</h1>
             <h2>Search using a UK postcode/place name</h2>
+                <br>
                 <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                     <p>
@@ -26,7 +27,10 @@
                     </p>
                 </form>
             <br>
-            <h2>Or start from one of the following</h2>
+            <hr>
+            <br>
+            <h2>Or pick one of the following</h2>
+                <br>
                 <p><a href="/create?long=-1.930556&lat=52.45055610">University of Birmingham Campus</a></p>
                 <p><a href="/create?long=-0.075278&lat=51.505556">Tower Bridge, London</a></p>
                 <p><a href="/create?long=-1.826111&lat=51.178889">Stonehenge, Wiltshire</a></p>

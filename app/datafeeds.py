@@ -1,8 +1,6 @@
 import openrouteservice
 from openrouteservice import geocode
-from openrouteservice.directions import directions
 from config import Config
-
 
 ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
 ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
@@ -12,6 +10,7 @@ def postcode_lookup(location):  # Enables user to enter address - eventually wil
     geocode_result = geocode.pelias_search(ors, text=location, country='GBR')
 
     return tuple((geocode_result['features'][0]['geometry']['coordinates']))
+    # TODO: handle gracefully where API does not return a result
 
 
 def reverse_lookup(coordinates):  # Takes coordinates and finds the corresponding street address
@@ -23,13 +22,3 @@ def reverse_lookup(coordinates):  # Takes coordinates and finds the correspondin
 
     print("Used those coordinates to look up the address:",
           matched_address.get('street'), matched_address.get('locality'))
-
-
-def route_to_london(start_location):
-    cutty_sark = (-0.0099676, 51.4827844)  # Destination is hardcoded as the Cutty Sark in Greenwich
-    route_coords = start_location, cutty_sark  # Coordinates tuple containing start location and Cutty Sark
-
-    route = directions(ors, route_coords,
-                       profile='cycling-road')  # Using ORS create a route from start location to Cutty Sark
-
-    return route

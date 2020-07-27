@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Let's plan a new route." }}
+    {{ "Just checking the location..." }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "Check the location below, then set your route preferences." }}
+    {{ "Does this look right?" }}
 {% endblock %}
 
 
@@ -14,9 +14,12 @@
     <div class="container">
         <div id='map' style='width: 500px; height: 300px;'></div>
 
-        <p>Wrong location? <a href={{ url_for('index') }}>Start search again.</a></p>
+        <br>
+        <a href="/" class="btn btn-secondary" role="button">Change location</a>
 
-        <p>Looks good? Let's continue</p>
+        <a href="/route?long={{ start[0] }}&lat={{ start[1] }}&dist=30"
+               class="btn btn-success" role="button">Continue</a>
+
     </div>
 
     <script>
