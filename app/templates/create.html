@@ -19,7 +19,6 @@
 
         <a href="/route?long={{ start[0] }}&lat={{ start[1] }}&dist=30"
                class="btn btn-success" role="button">Continue</a>
-
     </div>
 
     <script>
@@ -43,43 +42,12 @@
                     }
                 }]
             };
-
-            const geojsonCollection = { // Pass a bunch of coordinates to have multiple points on the map
-                "type": "FeatureCollection",
-                "features": [
-                    {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [{{ start[0] }}, {{ start[1] }}] // Start coords passed from backend
-                        },
-                        "properties": {}
-                    },
-                    {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-1.930556, 53.450556] // Some location near Manchester
-                        },
-                        "properties": {}
-                    },
-                    {
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [-1.826111, 51.178889] // Stonehenge
-                        },
-                        "properties": {}
-                    }
-                ]
-            };
-
             map.addLayer({
                 "id": "points",
                 "type": "circle",
                 "source": {
                     "type": "geojson",
-                    "data": geojsonCollection
+                    "data": geojsonData
                 },
                 "paint": {
                     "circle-radius": 5,

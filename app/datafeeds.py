@@ -9,8 +9,10 @@ ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
 def postcode_lookup(location):  # Enables user to enter address - eventually will be used to set route start location
     geocode_result = geocode.pelias_search(ors, text=location, country='GBR')
 
-    return tuple((geocode_result['features'][0]['geometry']['coordinates']))
-    # TODO: handle gracefully where API does not return a result
+    if len(geocode_result['features']) > 0:
+        return True, geocode_result['features'][0]['geometry']['coordinates']
+    else:
+        return False, (0, 0)
 
 
 def reverse_lookup(coordinates):  # Takes coordinates and finds the corresponding street address
@@ -20,5 +22,5 @@ def reverse_lookup(coordinates):  # Takes coordinates and finds the correspondin
 
     matched_address = rev_geocode_result['features'][0]['properties']
 
-    print("Used those coordinates to look up the address:",
-          matched_address.get('street'), matched_address.get('locality'))
+    print("Reverse lookup result: {}".format(rev_geocode_result))
+    print("Filtered result: {}".format(matched_address))
