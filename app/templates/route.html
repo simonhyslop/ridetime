@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block subhead %}
-    {{ "Just navigating one-way for now..." }}
+    {{ "We're working on making this better..." }}
 {% endblock %}
 
 
@@ -14,23 +14,31 @@
     <div class="container">
         <div id='map' style='width: 800px; height: 500px;'></div>
 
-        <p><strong>Route summary:</strong> {{ distance }} km // Approx. {{ duration }} mins.</p>
+        <h4><strong>Route summary:</strong> {{ distance }} km // Approx. {{ duration }} mins.</h4>
 
-        <p><strong>Disclaimer:</strong> Routes are generated automatically and may include private or unsuitable roads/locations.
+        <p><span class="badge badge-pill badge-warning">Disclaimer</span> Routes are generated automatically and may include private or unsuitable roads/locations.
             <br>Please check before setting off, and always observe signage and pay attention when cycling.</p>
 
         <p>Something go wrong? <a href='/'>Start search again.</a></p>
+
+        <p>Found {{ num_pubs_found }} pubs near this route.</p>
+
+        <p>Going to try displaying some instructions here:</p>
+        <p>{{ instructions }}</p>
 
     </div>
 
     {# https://docs.mapbox.com/mapbox-gl-js/example/geojson-line/ #}
     <script>
         mapboxgl.accessToken = '{{ mapbox_key }}';
+
+        const routeBounds = new mapboxgl.LngLatBounds({{ bbox }});
+
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/outdoors-v11',
-            center: [{{ start[0] }}, {{ start[1] }}], // Center map using start coords
-            zoom: 10
+            bounds: routeBounds
+            // center: [{{ start[0] }}, {{ start[1] }}], // Center map using start coords
         });
 
         const marker = new mapboxgl.Marker()

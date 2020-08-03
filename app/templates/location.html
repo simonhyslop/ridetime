@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+    {{ "Create a New Route" }}
+{% endblock %}
+
+{% block subhead %}
+    {{ "Where do you want to start?" }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.location(size=32) }}
+                {% for error in form.location.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                {{ form.submit() }}
+            </p>
+        </form>
+
+        <div id='map' style='width: 800px; height: 500px;'></div>
+
+        <br>
+        <button class="btn btn-warning" role="button" onclick="resetCoords()">Reset map</button>
+
+        <a href="/route?dist=30"
+               class="btn btn-success" role="button">Continue</a>
+    </div>
+
+    <script>
+        const startCoords = [{{ start[0] }}, {{ start[1] }}]; // Coordinates from location search
+
+        mapboxgl.accessToken = '{{ mapbox_key }}';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            center: startCoords, // Center map using start coords
+            zoom: 16
+        });
+
+        let marker = new mapboxgl.Marker({
+            draggable: true
+        })
+            .setLngLat(startCoords)
+            .addTo(map);
+
+        function onDragEnd() {
+            var lngLat = marker.getLngLat();
+            console.log(lngLat);
+        }
+
+        marker.on('dragend', onDragEnd);
+
+        function resetCoords() {
+            marker.setLngLat(startCoords);
+            map.flyTo({
+                center: startCoords
+            });
+        }
+
+    </script>
+
+{% endblock %}

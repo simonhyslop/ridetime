@@ -1,24 +1,38 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Get excited about cycling again." }}
+    {{ "Less screen time, more bike time." }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "Discover new road cycling routes with RideTime." }}
+    {{ "It's RideTime." }}
 {% endblock %}
 
 
 {% block content %}
 
     <div class="container">
+        <h3>Tired of riding the same routes every time?</h3>
+
+        <h5>Discover new road cycling routes with RideTime.
+            <a href="{{ url_for('about') }}">Find out more</a> or <a href="#search">get started</a>.</h5>
+
+    </div>
+
+    <br>
+    <hr>
+    <br>
+
+    <div class="container" id="search">
         <h1>Where are you starting from?</h1>
-            <h2>Search using UK postcode/place name</h2>
+
+        <div class="row">
+            <div class="col">
+            <h2>Search using postcode/place name</h2>
                 <br>
                 <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
                     <p>
-{#                        {{ form.location.label }}<br>#}
                         {{ form.location(size=32) }}
                         {% for error in form.location.errors %}
                         <span style="color: red;">[{{ error }}]</span>
@@ -26,15 +40,18 @@
                         {{ form.submit() }}
                     </p>
                 </form>
-            <br>
-            <hr>
-            <br>
+            </div>
+
+            <div class="col">
             <h2>Or pick one of the following</h2>
                 <br>
-                <p><a href="/create?long=-1.930556&lat=52.45055610">University of Birmingham Campus</a></p>
-                <p><a href="/create?long=-0.075278&lat=51.505556">Tower Bridge, London</a></p>
-                <p><a href="/create?long=-1.826111&lat=51.178889">Stonehenge, Wiltshire</a></p>
-
+                <ul>
+                    <li><a href="/create?long=-1.930556&lat=52.45055610">University of Birmingham Campus</a></li>
+                    <li><a href="/create?long=-0.075278&lat=51.505556">Tower Bridge, London</a></li>
+                    <li><a href="/create?long=-1.826111&lat=51.178889">Stonehenge, Wiltshire</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

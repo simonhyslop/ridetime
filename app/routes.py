@@ -13,24 +13,39 @@ mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def index():
+def home():
     form = LocationSearch()
     if form.validate_on_submit():  # When user submits their location, look it up using ORS API
         result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
         if result_found:  # If a matching location is found, move to next page
+            session['location_search'] = form.location.data
             session['start_coords'] = coords
-            flash("Location found: {}".format(address), 'info')
+            # flash("Location found: {}".format(address), 'info')
             return redirect('/location')
         else:  # If no location found, show an error
             flash("Location '{}' not found! Please try a different search.".format(form.location.data), 'danger')
 
-        # return redirect('/location?long={}&lat={}'.format(coords[0], coords[1]))
-
     return render_template('index.html', form=form)
 
 
-@app.route('/location')
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/location', methods=['GET', 'POST'])
 def set_prefs():
+    form = LocationSearch()
+    # form.location.data = session.get('location_search', '')
+
+    if form.validate_on_submit():  # When user submits their location, look it up using ORS API
+        result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
+        if result_found:  # If a matching location is found, update page to new location
+            session['location_search'] = form.location.data
+            session['start_coords'] = coords
+        else:  # If no location found, show an error
+            flash("Location '{}' not found! Please try a different search.".format(form.location.data), 'danger')
+
     start_coords = session.get('start_coords')
 
     if not start_coords:  # Backup route in case no start coordinates are found
@@ -39,32 +54,36 @@ def set_prefs():
 
     # datafeeds.reverse_lookup(start_coords)
 
-    return render_template('location.html', title='New route', mapbox_key=mapbox_key, start=start_coords)
+    return render_template('location.html', title='New route', form=form, mapbox_key=mapbox_key, start=start_coords)
 
 
 @app.route('/route')
 def generate_route():
     # TODO: make this more defensive so that it can handle bad inputs
 
-    start_coords = tuple(session.get('start_coords'))
+    start_coords = session.get('start_coords')
 
-    if not start_coords:  # Backup route in case no start coordinates are found
+    # In case we reach this page without coordinates set, use default location of Uni Birmingham campus
+    if not start_coords:
         flash('Location not recognised! Default location has been set instead.', 'danger')
-        start_coords = -1.930556, 52.450556  # If no location provided, default to UoB
+        start_coords = [-1.930556, 52.450556]  # Coordinates for Uni Birmingham campus
 
-    dist = request.args.get('dist')
+    distance_requested = request.args.get('dist', '20')  # User requested distance (in km) for how far they want to cycle. Value defaults to 20 in case nothing is set.
 
-    distance, duration, decoded = routefinder.primitive_roundroute(start_coords, dist)
+    bbox, distance, duration, decoded = routefinder.ors_roundroute(start_coords, distance_requested)
     distance = round(distance/1000, 1)  # Convert distance to nearest 0.1 km
     duration = round(duration/60)  # Convert time to nearest minute
     route_coords = decoded['coordinates']
 
-    poi_search = datafeeds.pubfinder(decoded)
+    # poi_search = datafeeds.pubfinder(decoded)
 
-    num_pubs_found = len(poi_search.get('features'))
+    num_pubs_found = 0  # was: len(poi_search.get('features'))
 
-    return render_template('route.html', title='View route', mapbox_key=mapbox_key, start=start_coords,
-                           route=route_coords, distance=distance, duration=duration, num_pubs_found=num_pubs_found)
+    instructions = "Instructions coming soon!"
+
+    return render_template('route.html', title='View route', mapbox_key=mapbox_key, bbox=bbox, start=start_coords,
+                           route=route_coords, distance=distance, duration=duration, num_pubs_found=num_pubs_found,
+                           instructions=instructions)
 
 
 # Just used for testing, can likely delete

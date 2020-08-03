@@ -16,6 +16,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -23,6 +30,9 @@
     <ul class="navbar-nav">
         <li class="nav-item active">
             <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('about') }}">About</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ url_for('set_prefs') }}">New route</a>
@@ -46,6 +56,7 @@
         Your browser does not support JavaScript, so <strong>some features of this site will not work</strong>!
         Find guidance on enabling it <a href="https://www.enable-javascript.com/">here</a>.
     </div>
+    <br>
 </noscript>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -65,7 +76,7 @@
 <footer class="footer">
     <div class="container">
         <span class="text-muted"><small>
-            Created by <a href="https://github.com/simonhyslop"target="_blank">Simon Hyslop</a> for MSc Project at University of Birmingham
+            Created by <a href="https://github.com/simonhyslop" target="_blank">Simon Hyslop</a> for MSc Project at University of Birmingham
             </small></span>
     </div>
 </footer>
