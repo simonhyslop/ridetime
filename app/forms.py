@@ -1,8 +1,8 @@
 # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import InputRequired
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
+from wtforms.validators import InputRequired, NumberRange
 
 
 class LoginForm(FlaskForm):
@@ -13,5 +13,10 @@ class LoginForm(FlaskForm):
 
 
 class LocationSearch(FlaskForm):
-    location = StringField('Search using postcode or place name', validators=[InputRequired()])
+    location = StringField('Enter postcode or place name', validators=[InputRequired()])
     submit = SubmitField('Go')
+
+
+class DistanceInput(FlaskForm):
+    distance = IntegerField('Distance', validators=[NumberRange(min=1, max=100)])
+    submit = SubmitField('Update')

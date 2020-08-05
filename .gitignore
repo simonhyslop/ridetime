@@ -2,10 +2,11 @@
 
 .idea
 .DS_Store
-static/
+app/static/
 mapbox_key
 ors_key
 config.py
+*.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

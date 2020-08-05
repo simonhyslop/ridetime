@@ -14,23 +14,40 @@
     <div class="container">
 
         <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
+            {{ location_input.hidden_tag() }}
             <p>
-                {{ form.location(size=32) }}
-                {% for error in form.location.errors %}
+                {{ location_input.location.label }}:
+                {{ location_input.location(size=32) }}
+                {% for error in location_input.location.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-                {{ form.submit() }}
+                {{ location_input.submit() }}
             </p>
         </form>
 
         <div id='map' style='width: 800px; height: 500px;'></div>
-
         <br>
-        <button class="btn btn-warning" role="button" onclick="resetCoords()">Reset map</button>
 
-        <a href="/route?dist=30"
-               class="btn btn-success" role="button">Continue</a>
+
+        <div id="distanceConfig">
+
+            <div class="row">
+                <div class="col-5">
+                    <form>
+                        <label for="distanceRange" id="distanceInput"></label>
+                        <input type="range" min="5" max="100" step="5" value="20" class="form-control-range" id="distanceRange">
+                    </form>
+                </div>
+
+                <div class="col">
+                    <button class="btn btn-warning" role="button" onclick="resetCoords()">Reset map</button>
+                </div>
+
+                <div class="col">
+                    <button class="btn btn-success" role="button" onclick="proceed()">Continue</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -62,6 +79,18 @@
             map.flyTo({
                 center: startCoords
             });
+        }
+
+        var slider = document.getElementById("distanceRange");
+        var output = document.getElementById("distanceInput");
+        output.innerHTML = "Preferred distance: <strong>" + slider.value + " km</strong>";
+
+        slider.oninput = function() {
+            output.innerHTML = "Preferred distance: <strong>" + slider.value + " km</strong>";
+        }
+
+        function proceed() {
+            window.location = '/route?dist=' + slider.value;
         }
 
     </script>

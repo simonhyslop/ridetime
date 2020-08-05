@@ -4,16 +4,19 @@
 # https://docs.mapbox.com/mapbox-gl-js/api/
 
 from flask import render_template, flash, redirect, url_for, request, session
-from app import app, datafeeds, routefinder
+from app import app, db, datafeeds, routefinder
 from app.forms import LoginForm, LocationSearch
 from config import Config
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
+from app.oauth import OAuthSignIn
+from app.models import User
 
 mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def home():
+def index():
     form = LocationSearch()
     if form.validate_on_submit():  # When user submits their location, look it up using ORS API
         result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
@@ -35,16 +38,19 @@ def about():
 
 @app.route('/location', methods=['GET', 'POST'])
 def set_prefs():
-    form = LocationSearch()
-    # form.location.data = session.get('location_search', '')
 
-    if form.validate_on_submit():  # When user submits their location, look it up using ORS API
-        result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
+    location_form = LocationSearch()
+
+    if request.method == 'GET':
+        location_form.location.data = session.get('location_search', '')
+
+    if location_form.validate_on_submit():  # When user submits their location, look it up using ORS API
+        result_found, coords, address = datafeeds.postcode_lookup(location_form.location.data)
         if result_found:  # If a matching location is found, update page to new location
-            session['location_search'] = form.location.data
+            session['location_search'] = location_form.location.data
             session['start_coords'] = coords
         else:  # If no location found, show an error
-            flash("Location '{}' not found! Please try a different search.".format(form.location.data), 'danger')
+            flash("Location '{}' not found! Please try a different search.".format(location_form.location.data), 'danger')
 
     start_coords = session.get('start_coords')
 
@@ -54,7 +60,7 @@ def set_prefs():
 
     # datafeeds.reverse_lookup(start_coords)
 
-    return render_template('location.html', title='New route', form=form, mapbox_key=mapbox_key, start=start_coords)
+    return render_template('location.html', title='New route', location_input=location_form, mapbox_key=mapbox_key, start=start_coords)
 
 
 @app.route('/route')
@@ -94,3 +100,34 @@ def login():
         flash('Login requested for user {}, remember_me={}'.format(form.username.data, form.remember_me.data), 'info')
         return redirect(url_for('index'))
     return render_template('login.html', title='Login', form=form)
+
+
+# New login method for Facebook and other OAuth
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+
+# After user logs in on Facebook/OAuth, this brings them back to the app
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    social_id = oauth.callback()
+    if social_id is None:
+        flash('Authentication failed.', 'danger')
+        return redirect(url_for('index'))
+    user = User.query.filter_by(social_id=social_id).first()
+    if not user:
+        user = User(social_id=social_id)
+        db.session.add(user)
+        db.session.commit()
+        flash('Registration complete. Thanks for joining!', 'success')
+    else:
+        flash('Welcome back!', 'success')
+    login_user(user, True)
+    return redirect(url_for('index'))
