@@ -1,5 +1,7 @@
+import json
 from random import randint
 from app.datafeeds import ors
+from app.models import Route
 from openrouteservice.directions import directions
 from openrouteservice import convert
 
@@ -71,10 +73,18 @@ def ors_roundroute(start_coords, km_distance):
     route = directions(client=ors, coordinates=start_coords, profile='cycling-road', options=circular_params,
                        instructions='true', instructions_format='html', geometry='true')
 
-    bbox = route.get('bbox')
     distance = route['routes'][0]['summary']['distance']
     duration = route['routes'][0]['summary']['duration']
+    bbox = json.dumps(route.get('bbox'))
     geometry = route['routes'][0]['geometry']
-    decoded = convert.decode_polyline(geometry)
+    # decoded = convert.decode_polyline(geometry)  TODO: likely remove, now handling this in routes.py
 
-    return bbox, distance, duration, decoded
+    # Convert ORS response into a Route object
+    ors_route = Route(distance=round(distance), duration=round(duration), bbox=bbox, polyline=geometry)
+
+    return ors_route
+
+
+def polyline_to_coords(encoded_polyline):
+    decoded = convert.decode_polyline(encoded_polyline)
+    return decoded['coordinates']

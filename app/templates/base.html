@@ -38,7 +38,11 @@
             <a class="nav-link" href="{{ url_for('set_prefs') }}">New Route</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('login') }}">Sign In</a>
+            {% if not current_user.is_authenticated %}
+                <a class="nav-link" href="{{ url_for('login') }}">Sign In</a>
+            {% else %}
+                <a class="nav-link" href="{{ url_for('saved') }}">Saved Routes</a>
+            {% endif %}
         </li>
     </ul>
 </nav>
@@ -72,7 +76,9 @@
 {% endwith %}
 
 {% block content %}{% endblock %}
+
 <br>
+
 <footer class="footer">
     <div class="container">
         <span class="text-muted"><small>

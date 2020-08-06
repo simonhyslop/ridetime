@@ -22,7 +22,10 @@ class Route(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(120), index=False, unique=False)
-    coordinates = db.Column(db.String(120), index=False, unique=False)
+    distance = db.Column(db.Integer, index=False, unique=False)
+    duration = db.Column(db.Integer, index=False, unique=False)
+    bbox = db.Column(db.String(120), index=False, unique=False)
+    polyline = db.Column(db.String(120), index=False, unique=False)
     gpx = db.Column(db.String(120), index=False, unique=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block headline %}
+    {{ "Saved Routes." }}
+{% endblock %}
+
+{% block subhead %}
+    {{ "View of all RideTime routes you have saved." }}
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <h1>Saved Routes Here</h1>
+        <p>For now, shows all routes for all RideTime users (contents of 'route' table in DB)</p>
+
+        {% for route in routes %}
+        <p>
+        Route ID {{ route.id }}, created on {{ route.timestamp }}
+        </p>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

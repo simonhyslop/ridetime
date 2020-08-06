@@ -3,13 +3,14 @@
 # https://getbootstrap.com/docs/4.5/getting-started/introduction/
 # https://docs.mapbox.com/mapbox-gl-js/api/
 
+import json
 from flask import render_template, flash, redirect, url_for, request, session
 from app import app, db, datafeeds, routefinder
 from app.forms import LoginForm, LocationSearch
 from config import Config
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from app.oauth import OAuthSignIn
-from app.models import User
+from app.models import User, Route
 
 mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 
@@ -76,30 +77,32 @@ def generate_route():
 
     distance_requested = request.args.get('dist', '20')  # User requested distance (in km) for how far they want to cycle. Value defaults to 20 in case nothing is set.
 
-    bbox, distance, duration, decoded = routefinder.ors_roundroute(start_coords, distance_requested)
-    distance = round(distance/1000, 1)  # Convert distance to nearest 0.1 km
-    duration = round(duration/60)  # Convert time to nearest minute
-    route_coords = decoded['coordinates']
+    route = routefinder.ors_roundroute(start_coords, distance_requested)
+
+    # Storing raw values to DB (really just testing for now)
+    print("Saving route to DB: {}".format(route))
+    db.session.add(route)
+    db.session.commit()
+
+    distance = round(route.distance/1000, 1)  # Convert distance to nearest 0.1 km
+    duration = round(route.duration/60)  # Convert time to nearest minute
+
+    route_coords = routefinder.polyline_to_coords(route.polyline)
 
     # poi_search = datafeeds.pubfinder(decoded)
-
     num_pubs_found = 0  # was: len(poi_search.get('features'))
 
     instructions = "Instructions coming soon!"
 
-    return render_template('route.html', title='View route', mapbox_key=mapbox_key, bbox=bbox, start=start_coords,
-                           route=route_coords, distance=distance, duration=duration, num_pubs_found=num_pubs_found,
+    return render_template('route.html', title='View route', mapbox_key=mapbox_key, bbox=json.loads(route.bbox), coords=route_coords,
+                           distance=distance, duration=duration, num_pubs_found=num_pubs_found,
                            instructions=instructions)
 
 
 # Just used for testing, can likely delete
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(form.username.data, form.remember_me.data), 'info')
-        return redirect(url_for('index'))
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login.html', title='Login')
 
 
 # New login method for Facebook and other OAuth
@@ -131,3 +134,32 @@ def oauth_callback(provider):
         flash('Welcome back!', 'success')
     login_user(user, True)
     return redirect(url_for('index'))
+
+
+@app.route('/saved')
+def saved():
+    all_routes = Route.query.all()
+
+    display_routes = all_routes # For now, let's display all routes from DB when user loads this page
+
+    return render_template('allroutes.html', routes=display_routes)
+
+
+@app.route('/saved/<route_id>')
+def saved_route(route_id):
+    if current_user.is_anonymous:
+        flash('To view saved routes, you will need to first sign in.', 'warning')
+        return redirect(url_for('login'))
+
+    route = Route.query.filter_by(id=route_id).first_or_404()
+
+    if not route.title:
+        route.title = "Unnamed Route"
+
+    distance = round(route.distance/1000, 1)  # Convert distance to nearest 0.1 km
+    duration = round(route.duration/60)  # Convert time to nearest minute
+
+    route_coords = routefinder.polyline_to_coords(route.polyline)
+
+    return render_template('saved.html', title='View route #{}'.format(route.id), mapbox_key=mapbox_key, route=route,
+                           bbox=json.loads(route.bbox), coords=route_coords, distance=distance, duration=duration)

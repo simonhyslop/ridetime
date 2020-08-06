@@ -1,0 +1,44 @@
+{# https://docs.mapbox.com/mapbox-gl-js/example/geojson-line/ #}
+    <script>
+        mapboxgl.accessToken = '{{ mapbox_key }}';
+
+        const routeBounds = new mapboxgl.LngLatBounds({{ bbox }});
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            bounds: routeBounds
+        });
+
+        const marker = new mapboxgl.Marker()
+            .setLngLat([{{ coords[0][0] }}, {{ coords[0][1] }}])
+            .addTo(map);
+
+        map.on('load', function() {
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates':
+                        {{ coords }}
+                    }
+                }
+            });
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#E84B29',
+                    'line-width': 8
+                }
+            });
+        });
+    </script>
