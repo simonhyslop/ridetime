@@ -1,21 +1,18 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Saved Routes." }}
+    {{ "Here's your route." }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "Loading a specific route you saved. Currently allows viewing routes created by other users." }}
+    {{ "Hope you like it!" }}
 {% endblock %}
 
 
 {% block content %}
 
     <div class="container">
-        <h1>{{ route.title }}</h1>
-        <p>ID {{ route.id }}, created on {{ route.timestamp }}</p>
-
-        <div id='map' style='width: 800px; height: 500px;'></div>
+        <div id='map' style='width: 1200px; height: 500px;'></div>
 
         <div id="routeConfig">
 
@@ -48,6 +45,14 @@
             </div>
 
         </div>
+
+        <p>Wrong starting point or distance? <a href={{ url_for('set_prefs') }}>Edit search.</a></p>
+
+        <p>Found {{ num_pubs_found }} pubs near this route.</p>
+
+        <p>Going to try displaying some instructions here:</p>
+        <p>{{ instructions }}</p>
+
     </div>
 
     {% include '_displayroute.html' %}

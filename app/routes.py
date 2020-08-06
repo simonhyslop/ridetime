@@ -61,7 +61,7 @@ def set_prefs():
 
     # datafeeds.reverse_lookup(start_coords)
 
-    return render_template('location.html', title='New route', location_input=location_form, mapbox_key=mapbox_key, start=start_coords)
+    return render_template('location.html', title='New Route', location_input=location_form, mapbox_key=mapbox_key, start=start_coords)
 
 
 @app.route('/route')
@@ -94,7 +94,7 @@ def generate_route():
 
     instructions = "Instructions coming soon!"
 
-    return render_template('route.html', title='View route', mapbox_key=mapbox_key, bbox=json.loads(route.bbox), coords=route_coords,
+    return render_template('create.html', title='View Route', mapbox_key=mapbox_key, bbox=json.loads(route.bbox), coords=route_coords,
                            distance=distance, duration=duration, num_pubs_found=num_pubs_found,
                            instructions=instructions)
 
@@ -142,7 +142,7 @@ def saved():
 
     display_routes = all_routes # For now, let's display all routes from DB when user loads this page
 
-    return render_template('allroutes.html', routes=display_routes)
+    return render_template('allroutes.html', title='Saved Routes', routes=display_routes)
 
 
 @app.route('/saved/<route_id>')
@@ -161,5 +161,5 @@ def saved_route(route_id):
 
     route_coords = routefinder.polyline_to_coords(route.polyline)
 
-    return render_template('saved.html', title='View route #{}'.format(route.id), mapbox_key=mapbox_key, route=route,
+    return render_template('route.html', title='View Route #{}'.format(route.id), mapbox_key=mapbox_key, route=route,
                            bbox=json.loads(route.bbox), coords=route_coords, distance=distance, duration=duration)

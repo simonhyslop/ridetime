@@ -15,11 +15,30 @@
         <h1>Saved Routes Here</h1>
         <p>For now, shows all routes for all RideTime users (contents of 'route' table in DB)</p>
 
-        {% for route in routes %}
-        <p>
-        Route ID {{ route.id }}, created on {{ route.timestamp }}
-        </p>
-        {% endfor %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Date Created</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for route in routes %}
+            <tr>
+                <th scope="row">{{ route.id }}</th>
+                <td>{{ (route.distance/1000)|round(1) }} km</td>
+                <td>{{ (route.duration/60)|round|int }} mins</td>
+                <td>{{ route.timestamp }}</td>
+                <td><a href="{{ url_for('saved_route', route_id=route.id) }}" class="btn btn-info" role="button">View</a></td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
 
     </div>
 
