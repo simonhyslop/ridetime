@@ -1,43 +1,53 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Saved Routes." }}
+    {{ "Saved Routes" }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "View of all RideTime routes you have saved." }}
+    {{ "Access your saved RideTime routes" }}
 {% endblock %}
 
 
 {% block content %}
 
     <div class="container">
-        <h1>Saved Routes Here</h1>
+        <h1>All Routes</h1>
         <p>For now, shows all routes for all RideTime users (contents of 'route' table in DB)</p>
 
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">#</th>
+                <th scope="col">Name</th>
                 <th scope="col">Distance</th>
                 <th scope="col">Duration</th>
-                <th scope="col">Date Created</th>
+                <th scope="col">Created</th>
+                <th scope="col">User</th>
                 <th scope="col"></th>
             </tr>
             </thead>
-            <tbody>
 
+            <tbody>
             {% for route in routes %}
             <tr>
                 <th scope="row">{{ route.id }}</th>
+                <td>
+                    {% if route.title %}
+                    {{ route.title }}
+                    {% else %}
+                    Untitled Route
+                    {% endif %}
+                </td>
                 <td>{{ (route.distance/1000)|round(1) }} km</td>
                 <td>{{ (route.duration/60)|round|int }} mins</td>
-                <td>{{ route.timestamp }}</td>
+                <td>{{ route.timestamp|timeago }}</td>
+                <td>{{ route.user_id }}</td>
                 <td><a href="{{ url_for('saved_route', route_id=route.id) }}" class="btn btn-info" role="button">View</a></td>
             </tr>
             {% endfor %}
-
             </tbody>
+
         </table>
 
     </div>

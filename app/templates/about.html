@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Less screen time, more bike time." }}
+    {{ "Less screen time, more bike time" }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "RideTime makes route planning quick and painless, giving you more time out on the bike." }}
+    {{ "RideTime makes route planning quick and painless, giving you more time out on the bike" }}
 {% endblock %}
 
 
@@ -15,20 +15,20 @@
     <h1>How it works</h1>
         <p>You enter where you want to start your ride. RideTime creates a circular route ending back at the same place.</p>
         <p>Perfect for planning rides with friends, riding solo, weekend rides or after-work exercise.</p>
-        <p>It's totally free to use. Ready to <a href="{{ url_for('set_prefs') }}">get started</a>?</p>
-
+        <p>It's totally free to use. Ready to <a href="/">get started</a>?</p>
+    <br>
     <h1>Who made this?</h1>
         <p>This site was created by <a href="https://github.com/simonhyslop" target="_blank">Simon Hyslop</a> for his MSc Computer Science project at University of Birmingham.</p>
-
+    <br>
     <h1>Acknowledgements</h1>
         <p>RideTime relies on a number of other services in order to run.
-            A project like this would not be possible without some amazing open-source projects.<br>
-            Particular thanks to:</p>
-        <ul>
-            <li><a href="#" target="_blank">OpenRouteService</a></li>
-            <li><a href="#" target="_blank">OpenStreetMap</a></li>
-            <li><a href="#" target="_blank">Mapbox</a></li>
-        </ul>
+            This project would not be possible without some amazing open-source projects.</p>
+        <p>Particular thanks to:</p>
+            <ul>
+                <li><a href="#" target="_blank">OpenRouteService</a></li>
+                <li><a href="#" target="_blank">OpenStreetMap</a></li>
+                <li><a href="#" target="_blank">Mapbox</a></li>
+            </ul>
 
     </div>
 {% endblock %}

@@ -1,57 +1,140 @@
 {% extends 'base.html' %}
 
-{% block headline %}
-    {{ "Get excited about cycling again." }}
-{% endblock %}
-
-{% block subhead %}
-    {{ "No more manual route-planning. It's RideTime." }}
-{% endblock %}
-
-
 {% block content %}
 
     <div class="container">
-        <h3>Tired of riding the same routes every time?</h3>
 
-        <h5>Discover new road cycling routes with RideTime.
-            <a href="{{ url_for('about') }}">Find out more</a> or <a href="#search">get started</a>.</h5>
+        {% if no_location %}
+        <div id="top">
+            <h3>Tired of riding the same routes every time?</h3>
+            <h5>Discover new road cycling routes with RideTime.
+                <a href="{{ url_for('about') }}">Find out more</a> or <button class="hideTop">Get Started</button></h5>
+        <br>
+        </div>
 
-    </div>
+        {% endif %}
 
-    <br>
-    <hr>
-    <br>
+        <table class="table">
+            <tr>
+                <td scope="col" style="vertical-align:middle">
+                    <form action="" method="post" novalidate>
+                        {{ location_input.hidden_tag() }}
+                            {{ location_input.location(size=32) }}
+                            {% for error in location_input.location.errors %}
+                                <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
+                            {{ location_input.submit() }}
+                     </form>
+                </td>
 
-    <div class="container" id="search">
-        <h1>Where are you starting from?</h1>
+                <td style="vertical-align: middle; align-content: center">
+                    <form>
+                        <label for="distanceRange" id="distanceInput"></label>
+                        <input type="range" min="5" max="100" step="5" value="20" class="form-control-range" id="distanceRange">
+                    </form>
+                </td>
 
-        <div class="row">
-            <div class="col">
-            <h2>Search using postcode/place name</h2>
-                <br>
-                <form action="" method="post" novalidate>
-                {{ form.hidden_tag() }}
-                    <p>
-                        {{ form.location(size=32) }}
-                        {% for error in form.location.errors %}
-                        <span style="color: red;">[{{ error }}]</span>
-                        {% endfor %}
-                        {{ form.submit() }}
-                    </p>
-                </form>
-            </div>
+                <td style="vertical-align: middle">
+                    <button class="btn btn-primary float-right" role="button" onclick="nextStep()">Continue</button>
+                </td>
+            </tr>
 
-            <div class="col">
-            <h2>Or pick one of the following</h2>
-                <br>
-                <ul>
-                    <li><a href="/create?long=-1.930556&lat=52.45055610">University of Birmingham Campus</a></li>
-                    <li><a href="/create?long=-0.075278&lat=51.505556">Tower Bridge, London</a></li>
-                    <li><a href="/create?long=-1.826111&lat=51.178889">Stonehenge, Wiltshire</a></li>
-                </ul>
+            <tr>
+                <td colspan="3" scope="col" style="vertical-align:middle">
+                    <div id='map' style='width: 1200px; height: 600px;'></div>
+                </td>
+            </tr>
+        </table>
+
+        <div id="distanceConfig">
+
+            <div class="row">
+                <div class="col-5">
+
+                </div>
+
+                {% if start %}
+                <div class="col">
+                    <button class="btn btn-warning" role="button" onclick="resetCoords()">Reset map</button>
+                </div>
+                {% endif %}
+
+                <div class="col">
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        const startCoords = [{{ start[0] }}, {{ start[1] }}]; // Coordinates from location search
+        const mapBounds = new mapboxgl.LngLatBounds([-6.6, 50.5, 2.5, 54.3]);
+
+        mapboxgl.accessToken = '{{ mapbox_key }}';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v11',
+            {% if start %}
+            center: startCoords, // Center map using start coords
+            zoom: 12
+            {% else %}
+            bounds: mapBounds
+            {% endif %}
+        });
+
+        map.on('load', function () {
+            map.resize();
+        });
+
+        {% if start %}
+        let marker = new mapboxgl.Marker({
+            draggable: true
+        })
+            .setLngLat(startCoords)
+            .addTo(map);
+
+        function onDragEnd() {
+            var lngLat = marker.getLngLat();
+            console.log(lngLat);
+        }
+
+        marker.on('dragend', onDragEnd);
+
+        function resetCoords() {
+            marker.setLngLat(startCoords);
+            map.flyTo({
+                center: startCoords
+            });
+        }
+        {% endif %}
+
+        $(document).ready(function() {
+            $(".hideTop").click(function () {
+                $("#top").slideUp();
+            });
+        });
+
+        function hideTop() {
+            const top = document.getElementById("top");
+              if (top.style.display === "none") {
+                top.style.display = "block";
+              } else {
+                top.style.display = "none";
+              }
+        }
+
+        var slider = document.getElementById("distanceRange");
+        var output = document.getElementById("distanceInput");
+        output.innerHTML = "Route distance: <strong>" + slider.value + " km</strong>";
+
+        slider.oninput = function() {
+            output.innerHTML = "Route distance: <strong>" + slider.value + " km</strong>";
+        }
+
+        function nextStep() {
+            window.location = '/route?dist=' + slider.value;
+        }
+
+    </script>
+
 
 {% endblock %}

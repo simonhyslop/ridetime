@@ -1,60 +1,41 @@
 {% extends 'base.html' %}
 
-{% block headline %}
-    {{ "Here's your route." }}
-{% endblock %}
-
-{% block subhead %}
-    {{ "Hope you like it!" }}
-{% endblock %}
-
-
 {% block content %}
 
     <div class="container">
-        <div id='map' style='width: 1200px; height: 500px;'></div>
+        <table class="table">
+            <tr>
+                <td style="vertical-align: middle">
+                    <button class="btn btn-warning" role="button" onclick="regenerateRoute()">Generate New Route</button>
+                </td>
 
-        <div id="routeConfig">
+                <td style="text-align: right; vertical-align: middle">
+                    <button class="btn btn-primary" role="button" onclick="saveRoute()">Save Route</button>
+                </td>
+            </tr>
 
-            <div class="row">
-                <div class="col-5">
-                    <h4><strong>Route summary:</strong></h4>
-                </div>
+            {% include '_routedisplay.html' %}
 
-                <div class="col">
-                    <h5>Happy with this? <button class="btn btn-info" role="button" onclick="resetCoords()">Save Route</button></h5>
-                </div>
-            </div>
+            <tr>
+                <td colspan="2" scope="col" style="vertical-align:middle">
+                    <p>Found {{ num_pubs_found }} pubs near this route.</p>
+                    <p>{{ instructions }}</p>
+                </td>
+            </tr>
 
-            <div class="row">
-
-                <div class="col-5">
-                    <h4>{{ distance }} km // Approx. {{ duration }} mins.</h4>
-                </div>
-
-                <div class="col">
-                    <h5>No good? <button class="btn btn-warning" role="button" onclick="resetCoords()">Generate New Route</button></h5>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <p><span class="badge badge-pill badge-warning">Disclaimer</span> Routes are generated automatically and may include private or unsuitable roads/locations.
-                    <br>Please check before setting off, and always observe signage and pay attention when cycling.</p>
-                </div>
-            </div>
-
-        </div>
-
-        <p>Wrong starting point or distance? <a href={{ url_for('set_prefs') }}>Edit search.</a></p>
-
-        <p>Found {{ num_pubs_found }} pubs near this route.</p>
-
-        <p>Going to try displaying some instructions here:</p>
-        <p>{{ instructions }}</p>
-
+        </table>
     </div>
 
-    {% include '_displayroute.html' %}
+    {% include '_mapbox.html' %}
+
+    <script>
+        function regenerateRoute() {
+            console.log("User requested randomised route");
+        }
+
+        function saveRoute() {
+            console.log("User requested to save route");
+        }
+    </script>
 
 {% endblock %}

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Saved Routes." }}
+    {{ "Saved Routes" }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "Loading a specific route you saved. Currently allows viewing routes created by other users." }}
+    {{ "Access your saved RideTime routes" }}
 {% endblock %}
 
 
@@ -13,43 +13,13 @@
 
     <div class="container">
         <h1>{{ route.title }}</h1>
-        <p>ID {{ route.id }}, created on {{ route.timestamp }}</p>
+        <p>Created {{ route.timestamp|timeago }}</p>
 
-        <div id='map' style='width: 800px; height: 500px;'></div>
-
-        <div id="routeConfig">
-
-            <div class="row">
-                <div class="col-5">
-                    <h4><strong>Route summary:</strong></h4>
-                </div>
-
-                <div class="col">
-                    <h5>Happy with this? <button class="btn btn-info" role="button" onclick="resetCoords()">Save Route</button></h5>
-                </div>
-            </div>
-
-            <div class="row">
-
-                <div class="col-5">
-                    <h4>{{ distance }} km // Approx. {{ duration }} mins.</h4>
-                </div>
-
-                <div class="col">
-                    <h5>No good? <button class="btn btn-warning" role="button" onclick="resetCoords()">Generate New Route</button></h5>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <p><span class="badge badge-pill badge-warning">Disclaimer</span> Routes are generated automatically and may include private or unsuitable roads/locations.
-                    <br>Please check before setting off, and always observe signage and pay attention when cycling.</p>
-                </div>
-            </div>
-
-        </div>
+        <table class="table">
+            {% include '_routedisplay.html' %}
+        </table>
     </div>
 
-    {% include '_displayroute.html' %}
+    {% include '_mapbox.html' %}
 
 {% endblock %}

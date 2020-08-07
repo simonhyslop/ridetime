@@ -13,7 +13,7 @@ class LoginForm(FlaskForm):
 
 
 class LocationSearch(FlaskForm):
-    location = StringField('Enter postcode or place name', validators=[InputRequired()])
+    location = StringField(default='Enter postcode or place name', validators=[InputRequired()])
     submit = SubmitField('Go')
 
 
