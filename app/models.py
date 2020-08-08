@@ -15,7 +15,7 @@ class User(UserMixin, db.Model):
         return User.query.get(int(id))
 
     def __repr__(self):
-        return '<User {}, nickname: {}>'.format(self.user_id, self.nickname)
+        return "User ID {}".format(self.id)
 
 
 class Route(db.Model):
@@ -30,4 +30,4 @@ class Route(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return 'Ride {}, created by user ID {} on {}'.format(self.id, self.user_id, self.timestamp)
+        return "Ride {}, created by user ID {} on {}".format(self.id, self.user_id, self.timestamp)

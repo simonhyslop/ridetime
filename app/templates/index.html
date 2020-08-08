@@ -1,13 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% if show_intro %}
-        {% include '_jumbotron.html' %}
-    {% endif %}
 
     <div class="container">
 
-        {% if show_intro %}
+        {% if header %}
             <div id="top">
                 <h3>Tired of riding the same routes every time?</h3>
                 <h5>Discover new road cycling routes with RideTime.

@@ -35,7 +35,11 @@
         }
 
         function saveRoute() {
-            console.log("User requested to save route");
+            {% if current_user.is_authenticated %}
+            window.location = '{{ url_for('save_route') }}'
+            {% else %}
+            console.log("Must log in before saving route.");
+            {% endif %}
         }
     </script>
 

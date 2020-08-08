@@ -1,0 +1,29 @@
+<table class="table">
+
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Distance</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Created</th>
+        <th scope="col">User</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for route in routes %}
+        <tr>
+            <th scope="row">{{ route.id }}</th>
+            <td>{{ route.title|routetitle }}</td>
+            <td>{{ route.distance|distance }} km</td>
+            <td>{{ route.duration|duration }} mins</td>
+            <td>{{ route.timestamp|timeago }}</td>
+            <td>{{ route.user_id }}</td>
+            <td><a href="{{ url_for('saved_route', route_id=route.id) }}" class="btn btn-info" role="button">View</a></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>

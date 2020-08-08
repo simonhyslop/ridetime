@@ -10,46 +10,27 @@
 
 
 {% block content %}
-    {% include '_jumbotron.html' %}
 
     <div class="container">
+        <h1>My Routes</h1>
+        <p>Routes you created yourself (user ID: {{ current_user.id }})</p>
+
+        {% if own_routes|length==0 %}
+            <h4>You haven't got any routes saved! Why not <a href="{{ url_for('start_page') }}">create one now</a>?</h4>
+        {% else %}
+            {% with routes=own_routes %}
+                {% include '_routetable.html' %}
+            {% endwith %}
+        {% endif %}
+
+        <br>
+
         <h1>All Routes</h1>
         <p>For now, shows all routes for all RideTime users (contents of 'route' table in DB)</p>
 
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Distance</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Created</th>
-                <th scope="col">User</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-
-            <tbody>
-            {% for route in routes %}
-            <tr>
-                <th scope="row">{{ route.id }}</th>
-                <td>
-                    {% if route.title %}
-                    {{ route.title }}
-                    {% else %}
-                    Untitled Route
-                    {% endif %}
-                </td>
-                <td>{{ (route.distance/1000)|round(1) }} km</td>
-                <td>{{ (route.duration/60)|round|int }} mins</td>
-                <td>{{ route.timestamp|timeago }}</td>
-                <td>{{ route.user_id }}</td>
-                <td><a href="{{ url_for('saved_route', route_id=route.id) }}" class="btn btn-info" role="button">View</a></td>
-            </tr>
-            {% endfor %}
-            </tbody>
-
-        </table>
+        {% with routes=all_routes %}
+            {% include '_routetable.html' %}
+        {% endwith %}
 
     </div>
 
