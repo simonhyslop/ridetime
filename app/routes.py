@@ -17,19 +17,26 @@ mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
-def index():
+def index(show_intro=True):
     form = LocationSearch()
     if form.validate_on_submit():  # When user submits their location, look it up using ORS API
         result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
         if result_found:  # If a matching location is found, move to next page
-            session['location_search'] = form.location.data
+            session['start_location'] = address
             session['start_coords'] = coords
             # flash("Location found: {}".format(address), 'info')
-            return render_template('index.html', no_location=False, location_input=form, mapbox_key=mapbox_key, start=coords)
+            return render_template('index.html', show_intro=False, location_input=form, mapbox_key=mapbox_key,
+                                   start=coords)
         else:  # If no location found, show an error
             flash("Location '{}' not found! Please try a different search.".format(form.location.data), 'danger')
 
-    return render_template('index.html', no_location=True, location_input=form, mapbox_key=mapbox_key, start=None)
+    return render_template('index.html', show_intro=show_intro, no_location=True, location_input=form,
+                           mapbox_key=mapbox_key, start=None)
+
+
+@app.route('/start', methods=['GET', 'POST'])  # Same view as homepage, but with intro header hidden (show_intro set to false)
+def start():
+    return index(False)
 
 
 @app.route('/about')
@@ -40,7 +47,6 @@ def about():
 # TODO: make this more defensive so that it can handle bad inputs
 @app.route('/route')
 def generate_route():
-
     start_coords = session.get('start_coords')
 
     # In case we reach this page without coordinates set, use default location of Uni Birmingham campus
@@ -52,6 +58,10 @@ def generate_route():
     distance_requested = request.args.get('dist', '20')
 
     route = routefinder.ors_roundroute(start_coords, distance_requested)
+
+    address = session.get('start_location')
+    if address:
+        route.title = "Route near {}".format(address)
 
     # Storing raw values to DB (really just testing for now)
     print("Saving route to DB: {}".format(route))
@@ -69,18 +79,17 @@ def generate_route():
     instructions = "Instructions coming soon!"
 
     return render_template('create.html', title='View Route', mapbox_key=mapbox_key, bbox=json.loads(route.bbox),
-                           coords=route_coords,
-                           distance=distance, duration=duration, num_pubs_found=num_pubs_found,
-                           instructions=instructions)
+                           coords=route_coords, route_title=route.title, distance=distance, duration=duration,
+                           num_pubs_found=num_pubs_found, instructions=instructions)
 
 
-# Just used for testing, can likely delete
+# Login page with FB login button
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login.html', title='Login')
 
 
-# New login method for Facebook and other OAuth
+# Login method for Facebook and other OAuth
 @app.route('/authorize/<provider>')
 def oauth_authorize(provider):
     if not current_user.is_anonymous:
@@ -108,6 +117,14 @@ def oauth_callback(provider):
     else:
         flash('Welcome back!', 'success')
     login_user(user, True)
+    return redirect(url_for('index'))
+
+
+# Logout button
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
     return redirect(url_for('index'))
 
 
@@ -144,3 +161,8 @@ def saved_route(route_id):
 @app.template_filter('timeago')
 def timeago_format(timestamp):
     return timeago.format(timestamp, datetime.datetime.utcnow())
+
+
+@app.template_filter('routetitle')
+def routetitle_format(title):
+    return title if title else "Untitled Route"

@@ -10,12 +10,18 @@
 
 
 {% block content %}
+    {% include '_jumbotron.html' %}
+
     <div class="container">
 
-    <h1>How it works</h1>
-        <p>You enter where you want to start your ride. RideTime creates a circular route ending back at the same place.</p>
+    <h1>How does it work?</h1>
+        <p>Tell us where you want to start your ride and we'll create a circular route ending back at the same place.</p>
         <p>Perfect for planning rides with friends, riding solo, weekend rides or after-work exercise.</p>
-        <p>It's totally free to use. Ready to <a href="/">get started</a>?</p>
+        <p>It's totally free to use. Ready to <a href="{{ url_for('start') }}">get started</a>?</p>
+    <br>
+    <h1>Do I need an account?</h1>
+        <p>No, you can get started with route planning straight away, no need to sign up.</p>
+        <p>If you want to though, you can use an account to save routes and come back and view them again later.</p>
     <br>
     <h1>Who made this?</h1>
         <p>This site was created by <a href="https://github.com/simonhyslop" target="_blank">Simon Hyslop</a> for his MSc Computer Science project at University of Birmingham.</p>

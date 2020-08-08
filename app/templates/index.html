@@ -1,17 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if show_intro %}
+        {% include '_jumbotron.html' %}
+    {% endif %}
 
     <div class="container">
 
-        {% if no_location %}
-        <div id="top">
-            <h3>Tired of riding the same routes every time?</h3>
-            <h5>Discover new road cycling routes with RideTime.
-                <a href="{{ url_for('about') }}">Find out more</a> or <button class="hideTop">Get Started</button></h5>
-        <br>
-        </div>
-
+        {% if show_intro %}
+            <div id="top">
+                <h3>Tired of riding the same routes every time?</h3>
+                <h5>Discover new road cycling routes with RideTime.
+                    <a href="{{ url_for('about') }}">Find out more</a> or <button class="hideTop">Get Started</button></h5>
+            <br>
+            </div>
         {% endif %}
 
         <table class="table">
@@ -110,17 +112,9 @@
         $(document).ready(function() {
             $(".hideTop").click(function () {
                 $("#top").slideUp();
+                $("#jumbotron").slideUp();
             });
         });
-
-        function hideTop() {
-            const top = document.getElementById("top");
-              if (top.style.display === "none") {
-                top.style.display = "block";
-              } else {
-                top.style.display = "none";
-              }
-        }
 
         var slider = document.getElementById("distanceRange");
         var output = document.getElementById("distanceInput");

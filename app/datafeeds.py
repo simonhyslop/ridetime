@@ -14,7 +14,7 @@ def postcode_lookup(location):  # Enables user to enter address - eventually wil
         coordinates = features[0]['geometry']['coordinates']
         address = features[0]['properties']
         # Format address with name and region. If no region found, show locality instead.
-        address_pretty = "{} ({})".format(address.get('name'), address.get('region', address.get('locality')))
+        address_pretty = address.get('name')
         return True, coordinates, address_pretty
     else:  # If there are no matches, fail gracefully
         return False, (0, 0), "Not found"
