@@ -138,14 +138,28 @@ def save_route():
         flash("Route saved.", 'success')
         return redirect(url_for('saved_route', route_id=unsaved_route_id))
     else:
-        flash("Route failed to save.", 'danger')
         return redirect(url_for('saved'))
 
 
+@app.route('/editroute/<route_id>', methods=['POST'])
+@login_required
+def edit_route(route_id):
+    # Load the Route from DB, and check the corresponding user_id matches the currently logged in user
+    route = Route.query.get(route_id)
+
+    if current_user.id == route.user_id:
+        new_title = request.form['title']
+        if route.title != new_title:  # Check title changed before updating DB
+            route.title = new_title
+            db.session.commit()
+
+    return redirect(url_for('saved_route', route_id=route_id))
+
+
 @app.route('/saved')
+@login_required
 def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
-
     all_routes = list(Route.query.filter().order_by(Route.timestamp.desc()))
 
     return render_template('allroutes.html', header=True, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
