@@ -29,6 +29,8 @@
 
     {% include '_mapbox.html' %}
 
+    {% include '_loginmodal.html' %}
+
     <script>
         function regenerateRoute() {
             console.log("User requested randomised route");
@@ -36,11 +38,18 @@
 
         function saveRoute() {
             {% if current_user.is_authenticated %}
-            window.location = '{{ url_for('save_route') }}'
+            window.location = "{{ url_for('save_route') }}";
             {% else %}
-            console.log("Must log in before saving route.");
+            $("#loginRequired").modal()
             {% endif %}
         }
+
+        {% if not current_user.is_authenticated %}
+        function loginThenSave() {
+            window.location = "{{ url_for('login_then_save_route') }}"
+        }
+        {% endif %}
+
     </script>
 
 {% endblock %}

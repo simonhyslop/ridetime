@@ -6,7 +6,8 @@ ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
 ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
 
 
-def postcode_lookup(location):  # Enables user to enter address - eventually will be used to set route start location
+# Enables user to enter address - eventually will be used to set route start location
+def postcode_lookup(location):
     geocode_result = geocode.pelias_search(ors, text=location, country='GBR')
     features = geocode_result.get('features')
 
@@ -20,7 +21,8 @@ def postcode_lookup(location):  # Enables user to enter address - eventually wil
         return False, (0, 0), "Not found"
 
 
-def reverse_lookup(coordinates):  # Takes coordinates and finds the corresponding street address
+# Takes coordinates and finds the corresponding street address
+def reverse_lookup(coordinates):
 
     # TODO: Refine this by only loading 'layers' which are streets, rather than venues
     rev_geocode_result = geocode.pelias_reverse(ors, point=coordinates, country='GBR', size=1)
@@ -31,6 +33,7 @@ def reverse_lookup(coordinates):  # Takes coordinates and finds the correspondin
     print("Filtered result: {}".format(matched_address))
 
 
+# TODO: WIP
 def pubfinder(coordinates):
     return places.places(ors, request='pois', geojson=coordinates, filter_category_group_ids=[560])
 

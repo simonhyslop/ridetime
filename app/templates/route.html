@@ -1,20 +1,13 @@
 {% extends 'base.html' %}
 
-{% block headline %}
-    {{ "Saved Routes" }}
-{% endblock %}
-
-{% block subhead %}
-    {{ "Access your saved RideTime routes" }}
-{% endblock %}
-
-
 {% block content %}
 
-    <div class="container">
-        <br>
-        <p><a href="{{ url_for('saved') }}">My Routes</a> -> {{ route.title }}</p>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('saved') }}">Saved Routes</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ route.title }}</li>
+    </ol>
 
+    <div class="container">
         <h1>
             {{ route.title }}
             <button
@@ -32,24 +25,8 @@
 
     {% include '_mapbox.html' %}
 
-    <div class="modal" id="editRoute">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Edit Route</h4>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    Title:
-                    <input type="text" class="form-control" id="editRouteTitle" value="{{ route.title }}">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="updateRoute()">Update</button>
-                    <button type="button" class="btn btn-secondary" onclick="resetModal()" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include '_editmodal.html' %}
+
 
     <script>
         function updateRoute() {

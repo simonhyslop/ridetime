@@ -3,7 +3,7 @@ from rauth import OAuth2Service
 from flask import current_app, url_for, request, redirect, session
 
 
-# This code is based on: https://github.com/miguelgrinberg/flask-oauth-example
+# This code is adapted from: https://github.com/miguelgrinberg/flask-oauth-example
 
 class OAuthSignIn(object):
     providers = None

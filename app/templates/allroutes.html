@@ -1,15 +1,10 @@
 {% extends 'base.html' %}
 
-{% block headline %}
-    {{ "Saved Routes" }}
-{% endblock %}
-
-{% block subhead %}
-    {{ "Access your saved RideTime routes" }}
-{% endblock %}
-
-
 {% block content %}
+
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+    </ol>
 
     <div class="container">
         <h1>My Routes</h1>

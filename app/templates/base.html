@@ -64,12 +64,13 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
     <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -- https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp -->
     {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissable" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    {{ message }}
-                </div>
-            {% endfor %}
+        {% for category, message in messages %}
+            {% with %}
+                {% set type = category %}
+                {% set message = message %}
+                {% include '_toast.html' %}
+            {% endwith %}
+        {% endfor %}
     {% endif %}
 {% endwith %}
 

@@ -3,7 +3,7 @@
 # https://getbootstrap.com/docs/4.5/getting-started/introduction/
 # https://docs.mapbox.com/mapbox-gl-js/api/
 
-import json, timeago, datetime
+import json
 from flask import render_template, flash, redirect, url_for, request, session, jsonify
 from app import app, db, datafeeds, routefinder
 from app.forms import LocationSearch
@@ -24,11 +24,11 @@ def homepage(header=True):
         if result_found:  # If a matching location is found, move to next page
             session['start_location'] = address
             session['start_coords'] = coords
-            # flash("Location found: {}".format(address), 'info')
+            # flash("Location found: {}".format(address), 'info')  TODO: debugging
             return render_template('index.html', header=False, location_input=form, mapbox_key=mapbox_key,
                                    start=coords)
         else:  # If no location found, show an error
-            flash("Location '{}' not found! Please try a different search.".format(form.location.data), 'danger')
+            flash("Location '{}' not found".format(form.location.data), 'danger')
 
     return render_template('index.html', header=header, no_location=True, location_input=form,
                            mapbox_key=mapbox_key, start=None)
@@ -39,19 +39,26 @@ def start_page():
     return homepage(False)
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html', header=True)
+@app.route('/createroute', methods=['POST'])
+def create_route():
+    start_coords = request.form['startCoordinates']
+    distance_requested = request.form['distanceRequested']
+
+    # TODO:
+    # Generate route using ORS
+    # Save route to DB
+    # Return to page as JSON
+
+    return redirect(url_for('start_page'))
 
 
-# TODO: make this more defensive so that it can handle bad inputs
 @app.route('/route')
 def generate_route():
     start_coords = session.get('start_coords')
 
     # In case we reach this page without coordinates set, use default location of Uni Birmingham campus
     if not start_coords:
-        flash("We didn't get your location, so have set it to Birmingham for you!", 'danger')
+        flash("Location auto-set to Birmingham!", 'danger')
         start_coords = [-1.930556, 52.450556]  # Coordinates for Uni Birmingham campus
 
     # User requested distance (in km) for how far they want to cycle. Defaults to 20 in case nothing is set.
@@ -71,6 +78,7 @@ def generate_route():
 
     route_coords = routefinder.polyline_to_coords(route.polyline)
 
+    # TODO: build POI search
     # poi_search = datafeeds.pubfinder(decoded)
     num_pubs_found = 0  # was: len(poi_search.get('features'))
 
@@ -81,10 +89,22 @@ def generate_route():
                            num_pubs_found=num_pubs_found, instructions=instructions)
 
 
+@app.route('/about')
+def about():
+    return render_template('about.html', header=True)
+
+
 # Login page with FB login button
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login.html', header=True, title='Login')
+
+
+# Used where user wants to save a route, but needs to log in first
+@app.route('/loginsaveroute')
+def login_then_save_route():
+    session['save_route'] = True  # Set flag for login method
+    return redirect(url_for('oauth_authorize', provider='facebook'))
 
 
 # Login method for Facebook and other OAuth
@@ -104,18 +124,20 @@ def oauth_callback(provider):
     oauth = OAuthSignIn.get_provider(provider)
     social_id = oauth.callback()
     if social_id is None:
-        flash('Authentication failed.', 'danger')
+        flash('Login failed', 'danger')
         return redirect(url_for('homepage'))
     user = User.query.filter_by(social_id=social_id).first()
     if not user:
         user = User(social_id=social_id)
         db.session.add(user)
         db.session.commit()
-        flash('Registration complete. Thanks for joining!', 'success')
-    else:
-        flash('Welcome back!', 'success')
     login_user(user, True)
-    return redirect(url_for('homepage'))
+
+    # Direct user to the appropriate page after logging in
+    if session.get('save_route', False):  # If user is logging in to save a route, direct them to that page
+        return redirect(url_for('save_route'))
+    else:  # Else if standard login, go to their view of all saved routes
+        return redirect(url_for('saved'))
 
 
 # Logout button
@@ -123,6 +145,7 @@ def oauth_callback(provider):
 @login_required
 def logout():
     logout_user()
+    # flash("You are now logged out", 'primary')  TODO: debugging
     return redirect(url_for('homepage'))
 
 
@@ -135,7 +158,8 @@ def save_route():
         route = Route.query.get(unsaved_route_id)
         route.user_id = current_user.id
         db.session.commit()
-        flash("Route saved.", 'success')
+        session['save_route'] = False  # Clear flag for login method
+        flash('Route saved', 'success')
         return redirect(url_for('saved_route', route_id=unsaved_route_id))
     else:
         return redirect(url_for('saved'))
@@ -147,7 +171,7 @@ def edit_route(route_id):
     # Load the Route from DB, and check the corresponding user_id matches the currently logged in user
     route = Route.query.get(route_id)
 
-    if current_user.id == route.user_id:
+    if current_user.id == route.user_id:  # Only edit if route belongs to the logged-in user
         new_title = request.form['title']
         if route.title != new_title:  # Check title changed before updating DB
             route.title = new_title
@@ -162,13 +186,13 @@ def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
     all_routes = list(Route.query.filter().order_by(Route.timestamp.desc()))
 
-    return render_template('allroutes.html', header=True, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
+    return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
 
 
 @app.route('/route/<route_id>')
 def saved_route(route_id):
     if current_user.is_anonymous:
-        flash('To view saved routes, you will need to first sign in.', 'warning')
+        flash('Sign in required', 'warning')
         return redirect(url_for('login'))
 
     route = Route.query.filter_by(id=route_id).first_or_404()
