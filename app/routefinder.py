@@ -6,26 +6,6 @@ from openrouteservice.directions import directions
 from openrouteservice import convert
 
 
-def route_to_london(start_coords):
-    cutty_sark = (-0.0099676, 51.4827844)  # Destination is hardcoded as the Cutty Sark in Greenwich
-    route_coords = start_coords, cutty_sark  # Coordinates tuple containing start location and Cutty Sark
-
-    # Using ORS create a route from start location to Cutty Sark
-    route = directions(client=ors, coordinates=route_coords, profile='cycling-road')
-
-    return parse_ors(route)
-
-
-# Using ORS create a route from start location to waypoint, and back again
-def route_waypoint_return(start_coords, waypoint_coords):
-
-    route_coords = start_coords, waypoint_coords, start_coords
-    print("Sending coordinates to ORS: {}".format(route_coords))  # TODO: debugging
-
-    route = directions(client=ors, coordinates=route_coords, profile='cycling-road')
-    return parse_ors(route)
-
-
 # Using ORS create a route between all waypoints
 def route_multi_waypoint(all_coords):
     route = directions(client=ors, coordinates=all_coords, profile='cycling-road')
@@ -64,8 +44,3 @@ def ors_roundroute(start_coords, km_distance):
     ors_route = Route(distance=round(distance), duration=round(duration), bbox=bbox, polyline=geometry)
 
     return ors_route
-
-
-def polyline_to_coords(encoded_polyline):
-    decoded = convert.decode_polyline(encoded_polyline)
-    return decoded['coordinates']

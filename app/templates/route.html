@@ -9,10 +9,12 @@
 
     <div class="container">
         <h1>
-            {{ route.title }}
-            <button
-                    type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
+            {{ route.title|routetitle }}
+            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
                     data-target="#editRoute">Edit
+            </button>
+
+            <button type="button" class="btn btn-primary float-right" onclick="getGPX()">Download GPX
             </button>
         </h1>
 
@@ -41,6 +43,11 @@
             let title = document.getElementById('editRouteTitle');
             title.value = "{{ route.title }}";
         }
+
+        function getGPX() {
+            window.location = '{{ url_for('download_gpx', route_id=route.id) }}';
+        }
+
     </script>
 
 {% endblock %}

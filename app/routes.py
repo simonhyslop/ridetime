@@ -4,13 +4,16 @@
 # https://docs.mapbox.com/mapbox-gl-js/api/
 
 import json
-from flask import render_template, flash, redirect, url_for, request, session, jsonify
-from app import app, db, datafeeds, routefinder
+from flask import render_template, flash, redirect, url_for, request, session, jsonify, Response
+from app import app, db, routefinder
 from app.forms import LocationSearch
 from config import Config
 from flask_login import login_user, logout_user, current_user, login_required
+from slugify import slugify
 from app.oauth import OAuthSignIn
 from app.models import User, Route
+from app.datafeeds import postcode_lookup, polyline_to_coords
+from app.gpx import route_to_gpx
 
 mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 
@@ -20,7 +23,7 @@ mapbox_key = Config.MAPBOX_KEY  # Read Mapbox key from config file
 def homepage(header=True):
     form = LocationSearch()
     if form.validate_on_submit():  # When user submits their location, look it up using ORS API
-        result_found, coords, address = datafeeds.postcode_lookup(form.location.data)
+        result_found, coords, address = postcode_lookup(form.location.data)
         if result_found:  # If a matching location is found, move to next page
             session['start_location'] = address
             session['start_coords'] = coords
@@ -34,7 +37,8 @@ def homepage(header=True):
                            mapbox_key=mapbox_key, start=None)
 
 
-@app.route('/start', methods=['GET', 'POST'])  # Same view as homepage, but with intro header hidden (header:False)
+# Same view as homepage, but with intro header hidden (header:False)
+@app.route('/start', methods=['GET', 'POST'])
 def start_page():
     return homepage(False)
 
@@ -76,7 +80,7 @@ def generate_route():
 
     session['unsaved_route_id'] = route.id  # Store the Route ID so that we can later assign it to a user
 
-    route_coords = routefinder.polyline_to_coords(route.polyline)
+    route_coords = polyline_to_coords(route.polyline)
 
     # TODO: build POI search
     # poi_search = datafeeds.pubfinder(decoded)
@@ -91,7 +95,7 @@ def generate_route():
 
 @app.route('/about')
 def about():
-    return render_template('about.html', header=True)
+    return render_template('about.html', header=True, title='About')
 
 
 # Login page with FB login button
@@ -189,18 +193,34 @@ def saved():
     return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
 
 
-@app.route('/route/<route_id>')
+@app.route('/route/<int:route_id>')
 def saved_route(route_id):
     if current_user.is_anonymous:
         flash('Sign in required', 'warning')
         return redirect(url_for('login'))
 
+    # TODO: Check user has permission before allowing access
+
     route = Route.query.filter_by(id=route_id).first_or_404()
+    route_coords = polyline_to_coords(route.polyline)
 
-    if not route.title:
-        route.title = "Untitled Route"
-
-    route_coords = routefinder.polyline_to_coords(route.polyline)
-
-    return render_template('route.html', header=False, title='View Route #{}'.format(route.id), mapbox_key=mapbox_key, route=route,
+    return render_template('route.html', header=False, title=route.title, mapbox_key=mapbox_key, route=route,
                            bbox=json.loads(route.bbox), coords=route_coords, distance=route.distance, duration=route.duration)
+
+
+# Adapted from: https://stackoverflow.com/questions/28011341/create-and-download-a-csv-file-from-a-flask-view
+@app.route('/gpx/<int:route_id>')
+@login_required
+def download_gpx(route_id):
+    # TODO: Check user has permission before allowing access
+
+    route = Route.query.filter_by(id=route_id).first_or_404()
+    route_gpx = route_to_gpx(route)
+
+    # Create a response and set the file content type
+    response = Response(route_gpx, mimetype='application/gpx+xml')
+
+    # Remove whitespace/symbols from route title, set as filename
+    safe_filename = "{}.gpx".format(slugify(route.title))
+    response.headers.set("Content-Disposition", "attachment", filename=safe_filename)
+    return response

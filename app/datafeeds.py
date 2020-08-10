@@ -1,9 +1,14 @@
 import openrouteservice
-from openrouteservice import geocode, places
+from openrouteservice import convert, geocode, places
 from config import Config
 
 ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
 ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
+
+
+def polyline_to_coords(encoded_polyline):
+    decoded = convert.decode_polyline(encoded_polyline)
+    return decoded['coordinates']
 
 
 # Enables user to enter address - eventually will be used to set route start location
