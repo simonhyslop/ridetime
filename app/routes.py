@@ -65,8 +65,12 @@ def generate_route():
         flash("Location auto-set to Birmingham!", 'danger')
         start_coords = [-1.930556, 52.450556]  # Coordinates for Uni Birmingham campus
 
-    # User requested distance (in km) for how far they want to cycle. Defaults to 20 in case nothing is set.
-    distance_requested = request.args.get('dist', '20')
+    # User requested distance (in km) for how far they want to cycle
+    distance_requested = int(request.args.get('dist'))
+
+    # Catch where no distance provided, or value out of range, and set value to 20
+    if not distance_requested or distance_requested < 1 or distance_requested > 100:
+        distance_requested = 20
 
     route = routefinder.ors_roundroute(start_coords, distance_requested)
 
@@ -164,7 +168,7 @@ def save_route():
         db.session.commit()
         session['save_route'] = False  # Clear flag for login method
         flash('Route saved', 'success')
-        return redirect(url_for('saved_route', route_id=unsaved_route_id))
+        return redirect(url_for('view_route', route_id=unsaved_route_id))
     else:
         return redirect(url_for('saved'))
 
@@ -177,35 +181,42 @@ def edit_route(route_id):
 
     if current_user.id == route.user_id:  # Only edit if route belongs to the logged-in user
         new_title = request.form['title']
-        if route.title != new_title:  # Check title changed before updating DB
+        new_public = json.loads(request.form['isPublic'])
+        if route.title != new_title or route.public != new_public:  # Only update if changes made
             route.title = new_title
+            route.public = new_public
             db.session.commit()
 
-    return redirect(url_for('saved_route', route_id=route_id))
+    return redirect(url_for('view_route', route_id=route_id))
 
 
 @app.route('/saved')
 @login_required
 def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
-    all_routes = list(Route.query.filter().order_by(Route.timestamp.desc()))
+    all_routes = list(Route.query.order_by(Route.timestamp.desc()).all())
 
     return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
 
 
 @app.route('/route/<int:route_id>')
-def saved_route(route_id):
-    if current_user.is_anonymous:
-        flash('Sign in required', 'warning')
-        return redirect(url_for('login'))
-
-    # TODO: Check user has permission before allowing access
+def view_route(route_id):
 
     route = Route.query.filter_by(id=route_id).first_or_404()
+
+    if not route.public:  # If route is not public, check user has permission before allowing access
+        if current_user.is_anonymous:  # Must sign in before viewing non-public routes
+            flash('Sign in required', 'warning')
+            return redirect(url_for('login'))
+
+        if current_user.id != route.user_id:  # Must be route owner in order to view it  # TODO: Allow sharing with other users
+            flash('This route has not been shared with you', 'warning')
+            return redirect(url_for('saved'))
+
+    # If we get here: route is either public, or user has permission to view, so we display it
     route_coords = polyline_to_coords(route.polyline)
 
-    return render_template('route.html', header=False, title=route.title, mapbox_key=mapbox_key, route=route,
-                           bbox=json.loads(route.bbox), coords=route_coords, distance=route.distance, duration=route.duration)
+    return render_template('route.html', header=False, mapbox_key=mapbox_key, route=route, coords=route_coords)
 
 
 # Adapted from: https://stackoverflow.com/questions/28011341/create-and-download-a-csv-file-from-a-flask-view

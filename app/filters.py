@@ -22,3 +22,8 @@ def distance_format(distance_in_metres):
 @app.template_filter('routetitle')
 def routetitle_format(title):
     return title if title else "Untitled Route"
+
+
+@app.template_filter('is_public')
+def route_public_format(route_public):
+    return 'Public' if route_public else 'Private'

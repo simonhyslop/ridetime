@@ -2,7 +2,7 @@
     <script>
         mapboxgl.accessToken = '{{ mapbox_key }}';
 
-        const routeBounds = new mapboxgl.LngLatBounds({{ bbox }});
+        const routeBounds = new mapboxgl.LngLatBounds({{ route.bbox }});
 
         const map = new mapboxgl.Map({
             container: 'map',

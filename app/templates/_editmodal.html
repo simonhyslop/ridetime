@@ -3,11 +3,20 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">Edit Route</h3>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" onclick="resetModal()" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
                 Title:
-                <input type="text" class="form-control" id="editRouteTitle" value="{{ route.title }}">
+                <input type="text" class="form-control" id="editRouteTitle" value="{{ route.title }}" maxlength="60">
+                <br>
+                Visibility:
+                <div class="dropdown">
+                    <select class="form-control" id="visibilityDropdown">
+                        <option value="1">Public (anyone can view)</option>
+                        <option value="0">Private (only you can view)</option>
+                    </select>
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="updateRoute()">Update</button>
@@ -16,3 +25,43 @@
         </div>
     </div>
 </div>
+
+<script>
+    function resetVisibilitySelection() {
+        const visDisplay = document.getElementById("visibilityDisplay");
+
+        if ({{ route.public|tojson }}) {
+            $("#visibilityDropdown").val('1')
+            visDisplay.innerHTML = "Public"
+        } else {
+            $("#visibilityDropdown").val('0')
+            visDisplay.innerHTML = "Private"
+        }
+    }
+
+    resetVisibilitySelection(); // Do this once on page load
+
+    function getVisibilitySelection() {
+        const formInput = document.getElementById('visibilityDropdown');
+        const formValue = parseInt(formInput.options[formInput.selectedIndex].value);
+        return formValue === 1; // Return true if user selected public, false if private
+    }
+
+    function updateRoute() {
+        $.post('/editroute/{{ route.id }}', {
+            title: $(editRouteTitle).val(),
+            isPublic: getVisibilitySelection()
+        }).done(function() {
+            window.location = '{{ url_for('view_route', route_id=route.id) }}';
+        });
+    }
+
+    function resetModal() {
+        let title = document.getElementById('editRouteTitle');
+        title.value = "{{ route.title }}";
+        resetVisibilitySelection();
+    }
+
+    $('.modal-backdrop').click(resetModal());
+
+</script>

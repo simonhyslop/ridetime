@@ -14,11 +14,13 @@
                     data-target="#editRoute">Edit
             </button>
 
-            <button type="button" class="btn btn-primary float-right" onclick="getGPX()">Download GPX
+            <button type="button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top"
+                    title="For use with Wahoo or Garmin bike GPS" onclick="getGPX()">Download GPX
             </button>
         </h1>
 
-        <p>Created {{ route.timestamp|timeago }}</p>
+        <p><span class="badge badge-secondary" data-toggle="modal" data-target="#editRoute" id="visibilityDisplay"></span>
+            Created {{ route.timestamp|timeago }}</p>
 
         <table class="table">
             {% include '_routedisplay.html' %}
@@ -29,25 +31,14 @@
 
     {% include '_editmodal.html' %}
 
-
     <script>
-        function updateRoute() {
-            $.post('/editroute/{{ route.id }}', {
-                title: $(editRouteTitle).val(),
-            }).done(function() {
-                window.location = '{{ url_for('saved_route', route_id=route.id) }}';
-            });
-        }
-
-        function resetModal() {
-            let title = document.getElementById('editRouteTitle');
-            title.value = "{{ route.title }}";
-        }
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
 
         function getGPX() {
             window.location = '{{ url_for('download_gpx', route_id=route.id) }}';
         }
-
     </script>
 
 {% endblock %}
