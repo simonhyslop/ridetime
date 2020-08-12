@@ -1,5 +1,3 @@
-# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iii-web-forms
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import InputRequired, NumberRange

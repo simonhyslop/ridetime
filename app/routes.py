@@ -1,8 +1,3 @@
-# http://jonathansoma.com/tutorials/flask-sqlalchemy-mapbox/getting-started-with-flask.html
-# https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-ii-templates
-# https://getbootstrap.com/docs/4.5/getting-started/introduction/
-# https://docs.mapbox.com/mapbox-gl-js/api/
-
 import json
 from flask import render_template, flash, redirect, url_for, request, session, jsonify, Response
 from app import app, db, routefinder
@@ -92,9 +87,8 @@ def generate_route():
 
     instructions = "Instructions coming soon!"
 
-    return render_template('create.html', header=False, title='View Route', mapbox_key=mapbox_key, bbox=json.loads(route.bbox),
-                           coords=route_coords, route_title=route.title, distance=route.distance, duration=route.duration,
-                           num_pubs_found=num_pubs_found, instructions=instructions)
+    return render_template('create.html', header=False, title='View Route', mapbox_key=mapbox_key, route=route,
+                           coords=route_coords, num_pubs_found=num_pubs_found, instructions=instructions)
 
 
 @app.route('/about')

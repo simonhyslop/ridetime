@@ -2,8 +2,6 @@ import gpxpy
 import gpxpy.gpx
 from app.datafeeds import polyline_to_coords
 
-# This code is adapted from: https://pypi.org/project/gpxpy/
-
 
 def route_to_gpx(route):
     gpx = gpxpy.gpx.GPX()
