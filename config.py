@@ -9,4 +9,9 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAPBOX_KEY = os.environ.get('MAPBOX_KEY')
     ORS_KEY = os.environ.get('ORS_KEY')
-    OAUTH_CREDENTIALS = os.environ.get('OAUTH_CREDENTIALS')
+    OAUTH_CREDENTIALS =  {
+        'facebook': {
+            'id': os.environ.get('FB_ID'),
+            'secret': os.environ.get('FB_SECRET')
+        }
+    }

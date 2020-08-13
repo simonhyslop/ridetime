@@ -1,8 +1,8 @@
 """Initial setup
 
-Revision ID: 2f204ec873a0
+Revision ID: 1ad4d4de5fb9
 Revises: 
-Create Date: 2020-08-10 17:11:08.624243
+Create Date: 2020-08-13 11:06:17.871892
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2f204ec873a0'
+revision = '1ad4d4de5fb9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,7 +34,7 @@ def upgrade():
     sa.Column('distance', sa.Integer(), nullable=True),
     sa.Column('duration', sa.Integer(), nullable=True),
     sa.Column('bbox', sa.String(length=120), nullable=True),
-    sa.Column('polyline', sa.String(length=120), nullable=True),
+    sa.Column('polyline', sa.String(length=10000), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
