@@ -26,7 +26,7 @@ class Route(db.Model):
     distance = db.Column(db.Integer, index=False)
     duration = db.Column(db.Integer, index=False)
     bbox = db.Column(db.String(120), index=False)
-    polyline = db.Column(db.String(120), index=False)
+    polyline = db.Column(db.String(10000), index=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
