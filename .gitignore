@@ -3,9 +3,6 @@
 .idea
 .DS_Store
 app/static/
-mapbox_key
-ors_key
-config.py
 *.db
 
 # Byte-compiled / optimized / DLL files
