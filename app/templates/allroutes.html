@@ -8,7 +8,7 @@
 
     <div class="container">
         <h1>My Routes</h1>
-        <p>Routes you created yourself (user ID: {{ current_user.id }})</p>
+        <p>Routes you created yourself</p>
 
         {% if own_routes|length==0 %}
             <h4>You haven't got any routes saved! Why not <a href="{{ url_for('start_page') }}">create one now</a>?</h4>
@@ -21,7 +21,7 @@
         <br>
 
         <h1>Public Routes</h1>
-        <p>For now, shows all routes for all RideTime users (contents of 'route' table in DB)</p>
+        <p>Routes shared by other RideTime users</p>
 
         {% with routes=all_routes %}
             {% include '_routetable.html' %}

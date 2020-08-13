@@ -188,7 +188,7 @@ def edit_route(route_id):
 @login_required
 def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
-    all_routes = list(Route.query.order_by(Route.timestamp.desc()).all())
+    all_routes = list(Route.query.filter_by(public=True).order_by(Route.timestamp.desc()).all())
 
     return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
 
