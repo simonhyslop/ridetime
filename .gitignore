@@ -2,7 +2,6 @@
 
 .idea
 .DS_Store
-app/static/
 *.db
 
 # Byte-compiled / optimized / DLL files
