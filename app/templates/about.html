@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block headline %}
-    {{ "Less screen time, more bike time" }}
+    {{ "Less screen time, more bike time." }}
 {% endblock %}
 
 {% block subhead %}
-    {{ "RideTime makes route planning quick and painless, giving you more time out on the bike" }}
+    {{ "RideTime makes route planning quick and painless, giving you more time out on the bike." }}
 {% endblock %}
 
 
@@ -14,6 +14,7 @@
 
     <h1>How does it work?</h1>
         <p>Tell us where you want to start your ride and we'll create a circular route ending back at the same place.</p>
+        <p>With RideTime, all routes are circular - so they start and finish in the same location.</p>
         <p>Perfect for planning rides with friends, riding solo, weekend rides or after-work exercise.</p>
         <p>It's totally free to use. Ready to <a href="{{ url_for('start_page') }}">get started</a>?</p>
     <br>
@@ -29,9 +30,9 @@
             This project would not be possible without some amazing open-source projects.</p>
         <p>Particular thanks to:</p>
             <ul>
-                <li><a href="#" target="_blank">OpenRouteService</a></li>
-                <li><a href="#" target="_blank">OpenStreetMap</a></li>
-                <li><a href="#" target="_blank">Mapbox</a></li>
+                <li><a href="https://openrouteservice.org/" target="_blank">OpenRouteService</a></li>
+                <li><a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a></li>
+                <li><a href="https://www.mapbox.com/" target="_blank">Mapbox</a></li>
             </ul>
 
     </div>

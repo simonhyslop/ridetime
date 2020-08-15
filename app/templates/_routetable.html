@@ -2,7 +2,6 @@
 
     <thead>
     <tr>
-        <th scope="col">#</th>
         <th scope="col">Name</th>
         <th scope="col">Distance</th>
         <th scope="col">Duration</th>
@@ -15,8 +14,7 @@
     <tbody>
     {% for route in routes %}
         <tr>
-            <th scope="row">{{ route.id }}</th>
-            <td>{{ route.title|routetitle }}</td>
+            <td scope="row">{{ route.title|routetitle }}</td>
             <td>{{ route.distance|distance }} km</td>
             <td>{{ route.duration|duration }} mins</td>
             <td>{{ route.timestamp|timeago }}</td>

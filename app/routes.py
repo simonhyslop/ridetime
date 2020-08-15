@@ -188,14 +188,16 @@ def edit_route(route_id):
 @login_required
 def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
-    all_routes = list(Route.query.filter_by(public=True).order_by(Route.timestamp.desc()).all())
+    all_routes = list(
+        Route.query.filter(Route.public == True, Route.user_id != current_user.id).order_by(
+            Route.timestamp.desc()).all())
 
-    return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes, all_routes=all_routes)
+    return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes,
+                           all_routes=all_routes)
 
 
 @app.route('/route/<int:route_id>')
 def view_route(route_id):
-
     route = Route.query.filter_by(id=route_id).first_or_404()
 
     if not route.public:  # If route is not public, check user has permission before allowing access

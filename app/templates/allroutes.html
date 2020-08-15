@@ -23,9 +23,13 @@
         <h1>Public Routes</h1>
         <p>Routes shared by other RideTime users</p>
 
-        {% with routes=all_routes %}
-            {% include '_routetable.html' %}
-        {% endwith %}
+        {% if all_routes|length==0 %}
+            <h4>There aren't any shared routes yet! Why not get your friends to sign up and start sharing.</h4>
+        {% else %}
+            {% with routes=all_routes %}
+                {% include '_routetable.html' %}
+            {% endwith %}
+        {% endif %}
 
     </div>
 
