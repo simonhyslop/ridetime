@@ -4,7 +4,7 @@ from wtforms.validators import InputRequired, NumberRange
 
 
 class LocationSearch(FlaskForm):
-    location = StringField(default='Enter start location', validators=[InputRequired()])
+    location = StringField(render_kw={"placeholder": "Postcode / place name"}, validators=[InputRequired()])
     submit = SubmitField('Go')
 
 

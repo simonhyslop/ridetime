@@ -46,8 +46,8 @@
 {% if header %}
     <div class="jumbotron" id="jumbotron">
         <div class="container">
-            <h1 class="display-4">{% block headline %}Get excited about cycling again.{% endblock %}</h1>
-            <h2 class="lead">{% block subhead %}RideTime makes route planning easy, creating circular routes from any UK location{% endblock %}</h2>
+            <h1 class="display-4">{% block headline %}{% endblock %}</h1>
+            <h2 class="lead">{% block subhead %}{% endblock %}</h2>
         </div>
     </div>
 {% endif %}
@@ -62,14 +62,9 @@
 </noscript>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -- https://www.w3schools.com/bootstrap4/bootstrap_alerts.asp -->
     {% if messages %}
         {% for category, message in messages %}
-            {% with %}
-                {% set type = category %}
-                {% set message = message %}
-                {% include '_toast.html' %}
-            {% endwith %}
+            {% include '_toast.html' %}
         {% endfor %}
     {% endif %}
 {% endwith %}

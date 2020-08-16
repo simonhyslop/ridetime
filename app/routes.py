@@ -1,5 +1,5 @@
 import json
-from flask import render_template, flash, redirect, url_for, request, session, jsonify, Response
+from flask import render_template, flash, redirect, url_for, request, session, Response
 from app import app, db, routefinder
 from app.forms import LocationSearch
 from config import Config
@@ -81,14 +81,8 @@ def generate_route():
 
     route_coords = polyline_to_coords(route.polyline)
 
-    # TODO: build POI search
-    # poi_search = datafeeds.pubfinder(decoded)
-    num_pubs_found = 0  # was: len(poi_search.get('features'))
-
-    instructions = "Instructions coming soon!"
-
-    return render_template('create.html', header=False, title='View Route', mapbox_key=mapbox_key, route=route,
-                           coords=route_coords, num_pubs_found=num_pubs_found, instructions=instructions)
+    return render_template('create.html', header=False, title='View Route', mapbox_key=mapbox_key,
+                           route=route, coords=route_coords)
 
 
 @app.route('/about')
@@ -189,7 +183,7 @@ def edit_route(route_id):
 def saved():
     own_routes = list(Route.query.filter_by(user_id=current_user.id).order_by(Route.timestamp.desc()))
     all_routes = list(
-        Route.query.filter(Route.public == True, Route.user_id != current_user.id).order_by(
+        Route.query.filter(Route.public, Route.user_id != current_user.id).order_by(
             Route.timestamp.desc()).all())
 
     return render_template('allroutes.html', header=False, title='Saved Routes', own_routes=own_routes,
@@ -206,13 +200,16 @@ def view_route(route_id):
             return redirect(url_for('login'))
 
         if current_user.id != route.user_id:  # Must be route owner in order to view it  # TODO: Allow sharing with other users
-            flash('This route has not been shared with you', 'warning')
+            flash('This route is not shared with you', 'warning')
             return redirect(url_for('saved'))
 
     # If we get here: route is either public, or user has permission to view, so we display it
     route_coords = polyline_to_coords(route.polyline)
 
-    return render_template('route.html', header=False, mapbox_key=mapbox_key, route=route, coords=route_coords)
+    own_route = current_user.id == route.user_id
+
+    return render_template('route.html', header=False, mapbox_key=mapbox_key, route=route, coords=route_coords,
+                           own_route=own_route)
 
 
 # Adapted from: https://stackoverflow.com/questions/28011341/create-and-download-a-csv-file-from-a-flask-view

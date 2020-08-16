@@ -2,6 +2,12 @@
 
 {% block content %}
 
+    <style>
+        .title-button {
+            vertical-align: middle;
+        }
+    </style>
+
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ url_for('saved') }}">Saved Routes</a></li>
         <li class="breadcrumb-item active" aria-current="page">{{ route.title }}</li>
@@ -9,18 +15,26 @@
 
     <div class="container">
         <h1>
-            {{ route.title|routetitle }}
-            <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
-                    data-target="#editRoute">Edit
-            </button>
-
-            <button type="button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top"
-                    title="For use with Wahoo or Garmin bike GPS" onclick="getGPX()">Download GPX
-            </button>
+            <div class="title-button">
+                {{ route.title|routetitle }}
+                {% if own_route %}
+                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal"
+                            data-target="#editRoute">Edit
+                    </button>
+                {% endif %}
+                <br>
+                <button type="button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top"
+                        title="For use with Wahoo or Garmin bike GPS" onclick="getGPX()">Download GPX
+                </button>
+            </div>
         </h1>
 
-        <p><span class="badge badge-secondary" data-toggle="modal" data-target="#editRoute" id="visibilityDisplay"></span>
-            Created {{ route.timestamp|timeago }}</p>
+        {% if own_route %}
+            <p><span class="badge badge-secondary" data-toggle="modal" data-target="#editRoute"
+                 id="visibilityDisplay"></span> Created {{ route.timestamp|timeago }}</p>
+        {% else %}
+            <p>Created {{ route.timestamp|timeago }} by another RideTime user</p>
+        {% endif %}
 
         <table class="table">
             {% include '_routedisplay.html' %}
@@ -29,7 +43,9 @@
 
     {% include '_mapbox.html' %}
 
-    {% include '_editmodal.html' %}
+    {% if own_route %}
+        {% include '_editmodal.html' %}
+    {% endif %}
 
     <script>
         $(function () {
