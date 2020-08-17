@@ -60,10 +60,12 @@ def generate_route():
         start_coords = [-1.930556, 52.450556]  # Coordinates for Uni Birmingham campus
 
     # User requested distance (in km) for how far they want to cycle
-    distance_requested = request.args.get('dist')
+    distance_requested = request.args.get('dist', 20)
 
-    # Ignore inputs which are not an int
-    if not isinstance(distance_requested, int):
+    # Convert to int, or set default for invalid input
+    try:
+        distance_requested = int(distance_requested)
+    except ValueError:
         distance_requested = 20
 
     # Catch where no distance provided, or value out of range, and set value to 20
