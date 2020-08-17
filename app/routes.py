@@ -22,7 +22,6 @@ def homepage(header=True):
         if result_found:  # If a matching location is found, move to next page
             session['start_location'] = address
             session['start_coords'] = coords
-            # flash("Location found: {}".format(address), 'info')  TODO: debugging
             return render_template('index.html', header=False, location_input=form, mapbox_key=mapbox_key,
                                    start=coords)
         else:  # If no location found, show an error
@@ -61,7 +60,11 @@ def generate_route():
         start_coords = [-1.930556, 52.450556]  # Coordinates for Uni Birmingham campus
 
     # User requested distance (in km) for how far they want to cycle
-    distance_requested = int(request.args.get('dist'))
+    distance_requested = request.args.get('dist')
+
+    # Ignore inputs which are not an int
+    if not isinstance(distance_requested, int):
+        distance_requested = 20
 
     # Catch where no distance provided, or value out of range, and set value to 20
     if not distance_requested or distance_requested < 1 or distance_requested > 100:
@@ -141,7 +144,6 @@ def oauth_callback(provider):
 @login_required
 def logout():
     logout_user()
-    # flash("You are now logged out", 'primary')  TODO: debugging
     return redirect(url_for('homepage'))
 
 
@@ -199,7 +201,7 @@ def view_route(route_id):
             flash('Sign in required', 'warning')
             return redirect(url_for('login'))
 
-        if current_user.id != route.user_id:  # Must be route owner in order to view it  # TODO: Allow sharing with other users
+        if current_user.id != route.user_id:  # Must be route owner in order to view it
             flash('This route is not shared with you', 'warning')
             return redirect(url_for('saved'))
 

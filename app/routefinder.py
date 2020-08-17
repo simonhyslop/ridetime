@@ -29,7 +29,7 @@ def ors_roundroute(start_coords, km_distance):
     circular_params = {"round_trip": {"length": metre_distance, "seed": seed}}  # Params dict to pass with ORS API call
 
     # TODO: debugging
-    print("Requesting {} km route starting at {} with seed value {}. Let's see what ORS cook up...".format(km_distance, start_coords, seed))
+    print("Requesting {} km route starting at {} with seed value {} using ORS".format(km_distance, start_coords, seed))
 
     # Use ORS to create a circular route
     route = directions(client=ors, coordinates=start_coords, profile='cycling-road', options=circular_params,
