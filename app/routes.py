@@ -210,7 +210,10 @@ def view_route(route_id):
     # If we get here: route is either public, or user has permission to view, so we display it
     route_coords = polyline_to_coords(route.polyline)
 
-    own_route = current_user.id == route.user_id
+    if current_user.is_anonymous:
+        own_route = False
+    else:
+        own_route = current_user.id == route.user_id
 
     return render_template('route.html', header=False, mapbox_key=mapbox_key, route=route, coords=route_coords,
                            own_route=own_route)

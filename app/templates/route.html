@@ -23,9 +23,11 @@
                     </button>
                 {% endif %}
                 <br>
-                <button type="button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top"
-                        title="For use with Wahoo or Garmin bike GPS" onclick="getGPX()">Download GPX
-                </button>
+                {% if current_user.is_authenticated %}
+                    <button type="button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top"
+                            title="For use with Wahoo or Garmin bike GPS" onclick="getGPX()">Download GPX
+                    </button>
+                {% endif %}
             </div>
         </h1>
 
