@@ -1,3 +1,6 @@
+# Overrides for common errors, allowing us to implement more helpful
+# error pages, rather than relying on the default pages provided by Flask.
+
 from flask import render_template
 from app import app, db
 

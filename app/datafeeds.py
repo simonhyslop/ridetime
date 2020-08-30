@@ -1,4 +1,8 @@
-import openrouteservice
+# Here we coordinate our external datafeeds (i.e. Openrouteservice), handling
+# authorisation using our API key, and use functions to query the API and
+# return the results in a format useful for our application.
+
+import openrouteservice  # Openrouteservice library to reduce the code required to query their API
 from openrouteservice import convert, geocode, places
 from config import Config
 
@@ -6,14 +10,16 @@ ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
 ors = openrouteservice.Client(key=ors_key)  # Create client for accessing ORS
 
 
+# Takes input of a route (in the format of an encoded polyline), uses the Openrouteservice
+# library to decode it, then returns only the coordinates of the route, discarding the rest.
 def polyline_to_coords(encoded_polyline):
     decoded = convert.decode_polyline(encoded_polyline)
     return decoded['coordinates']
 
 
-# Enables user to enter address - eventually will be used to set route start location
+# Enables user to enter address, returns coordinates which are used to set route start location
 def postcode_lookup(location):
-    geocode_result = geocode.pelias_search(ors, text=location, country='GBR')
+    geocode_result = geocode.pelias_search(ors, text=location, country='GBR')  # Query the API, limiting results to UK
     features = geocode_result.get('features')
 
     if len(features) > 0:  # If API returns a match, return the top match
@@ -24,21 +30,3 @@ def postcode_lookup(location):
         return True, coordinates, address_pretty
     else:  # If there are no matches, fail gracefully
         return False, (0, 0), "Not found"
-
-
-# Takes coordinates and finds the corresponding street address
-def reverse_lookup(coordinates):
-
-    # TODO: Refine this by only loading 'layers' which are streets, rather than venues
-    rev_geocode_result = geocode.pelias_reverse(ors, point=coordinates, country='GBR', size=1)
-
-    matched_address = rev_geocode_result['features'][0]['properties']
-
-    print("Reverse lookup result: {}".format(rev_geocode_result))
-    print("Filtered result: {}".format(matched_address))
-
-
-# TODO: WIP
-def pubfinder(coordinates):
-    return places.places(ors, request='pois', geojson=coordinates, filter_category_group_ids=[560])
-
