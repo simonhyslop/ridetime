@@ -9,14 +9,14 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'E9AcXgcsRSHWVBYeRMPS'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'zfdAbXF2BRLL2CneKemU'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAPBOX_KEY = 'pk.eyJ1Ijoic2ltb25oeXNsb3AiLCJhIjoiY2tkd3NhMHYxNDI4NDJ6cm9vdnd0aHhydCJ9.P2L5WzrKVdatkF_X-VIFeQ'
-    ORS_KEY = '5b3ce3597851110001cf6248ac1d4c19bb154649ada5b45d88b397f0'
-    OAUTH_CREDENTIALS = {
+    MAPBOX_KEY = os.environ.get('MAPBOX_KEY')
+    ORS_KEY = os.environ.get('ORS_KEY')
+    OAUTH_CREDENTIALS =  {
         'facebook': {
-            'id': '298123958067448',
-            'secret': 'd1b5f2a008fe00f2f03cb240b018ea34'
+            'id': os.environ.get('FB_ID'),
+            'secret': os.environ.get('FB_SECRET')
         }
     }
