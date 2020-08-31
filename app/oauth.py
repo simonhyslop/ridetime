@@ -1,10 +1,15 @@
+# This handles user registration and login, which has so far just been implemented
+# for Facebook accounts, but has been built in an extensible way so that further
+# OAuth providers can be easily added in future.
+#
+# This code is adapted from: https://github.com/miguelgrinberg/flask-oauth-example
+
 import json
 from rauth import OAuth2Service
 from flask import current_app, url_for, request, redirect, session
 
 
-# This code is adapted from: https://github.com/miguelgrinberg/flask-oauth-example
-
+# General OAuth implementation, which can handle multiple providers
 class OAuthSignIn(object):
     providers = None
 
@@ -34,6 +39,7 @@ class OAuthSignIn(object):
         return self.providers[provider_name]
 
 
+# Specifics for implementing OAuth with Facebook accounts
 class FacebookSignIn(OAuthSignIn):
     def __init__(self):
         super(FacebookSignIn, self).__init__('facebook')

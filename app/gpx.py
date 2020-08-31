@@ -1,4 +1,4 @@
-# Uses the gpxpy to create a GPX version of the route (for use with a bike GPS device)
+# Uses the gpxpy library to create a GPX version of the route (for use with a bike GPS device)
 
 import gpxpy
 import gpxpy.gpx
@@ -6,8 +6,8 @@ from app.datafeeds import polyline_to_coords
 
 
 # We implement our own method to handle the data format we are using - the input is a
-# Route object, which is used to set the title. The polyline is extracted and decoded,
-# with the coordinates used to build the GPX file.
+# Route object, which is used to set the title. The polyline is extracted from the Route
+# object and decoded, with the coordinates used to construct the GPX file.
 def route_to_gpx(route):
     gpx = gpxpy.gpx.GPX()
     gpx.name = route.title

@@ -1,9 +1,11 @@
 # Here we coordinate our external datafeeds (i.e. Openrouteservice), handling
 # authorisation using our API key, and use functions to query the API and
 # return the results in a format useful for our application.
+#
+# ORS library can be found here: https://github.com/GIScience/openrouteservice-py
 
-import openrouteservice  # Openrouteservice library to reduce the code required to query their API
-from openrouteservice import convert, geocode, places
+import openrouteservice  # Using Openrouteservice library to reduce the code required to query their API
+from openrouteservice import convert, geocode
 from config import Config
 
 ors_key = Config.ORS_KEY  # Read OpenRouteService key from config file
